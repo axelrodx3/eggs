@@ -90,6 +90,21 @@ body {
   pointer-events: auto;
 }
 
+.basket-hotspot-layer {
+  pointer-events: none;
+}
+
+.basket-viewport {
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .basket-hotspot-hit {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 .focus-ring {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-lime focus-visible:ring-offset-2 focus-visible:ring-offset-background;
 }
