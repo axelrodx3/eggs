@@ -11,8 +11,11 @@ export const siteConfig = {
     "The basket represents the project theme. Holding $EGGS does not automatically constitute ownership of the displayed securities.",
   robinhoodUrl: "https://robinhood.com",
   social: {
-    x: "https://x.com",
-    telegram: "https://t.me",
+    x: "https://x.com/eggsonhood",
+    /** Set when the official Telegram URL is available. */
+    telegram: null as string | null,
+    /** Set when the official Dexscreener URL is available. */
+    dexscreener: null as string | null,
   },
   contractAddress: null as string | null,
   nav: [
@@ -23,3 +26,5 @@ export const siteConfig = {
     { id: "faq", label: "FAQ" },
   ],
 } as const;
+
+export type SiteConfig = typeof siteConfig;

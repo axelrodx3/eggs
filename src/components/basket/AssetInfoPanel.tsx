@@ -34,6 +34,11 @@ export function AssetInfoPanel({
   mobile = false,
 }: AssetInfoPanelProps) {
   const positive = (quote?.change ?? 0) >= 0;
+  const typeLabel = asset.isPrivate
+    ? "Private Company"
+    : asset.type === "index"
+      ? "Index"
+      : asset.sector;
 
   return (
     <AnimatePresence mode="wait">
@@ -61,28 +66,27 @@ export function AssetInfoPanel({
           </button>
         ) : null}
 
-        <div className="flex items-start gap-4">
-          <div className="relative h-14 w-14 overflow-hidden rounded-2xl border border-border bg-black/40">
-            <Image
-              src={asset.logoPath}
-              alt=""
-              fill
-              className="object-contain p-2"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs uppercase tracking-[0.18em] text-muted">
-              {asset.isPrivate ? "Private Company" : asset.sector}
-            </p>
-            <h3 className="truncate text-2xl font-semibold">{asset.name}</h3>
-            <p className="text-sm text-muted">
-              {asset.ticker ?? "Not publicly traded"}
-            </p>
-          </div>
+        <div className="relative mx-auto h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-border bg-black/40">
+          <Image
+            src={asset.logoPath}
+            alt=""
+            fill
+            className="object-contain p-2"
+          />
+        </div>
+
+        <div className="mt-4 space-y-1 text-center lg:text-left">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">
+            {typeLabel}
+          </p>
+          <h3 className="text-2xl font-semibold leading-tight">{asset.name}</h3>
+          <p className="text-sm text-muted">
+            {asset.ticker ?? "Private Company"}
+          </p>
         </div>
 
         {asset.isPrivate ? (
-          <div className="mt-6 space-y-4">
+          <div className="mt-5 space-y-4">
             <p className="text-sm leading-relaxed text-foreground/80">
               {asset.description}
             </p>
@@ -93,7 +97,7 @@ export function AssetInfoPanel({
             <a
               href={asset.officialUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="focus-ring inline-flex items-center gap-2 text-sm text-lime"
             >
               Official site
@@ -101,7 +105,7 @@ export function AssetInfoPanel({
             </a>
           </div>
         ) : (
-          <div className="mt-6 space-y-5">
+          <div className="mt-5 space-y-4">
             {isDemo ? (
               <p className="inline-flex rounded-full border border-lime/30 bg-lime/10 px-3 py-1 text-xs font-medium text-lime">
                 Demo data
@@ -116,7 +120,7 @@ export function AssetInfoPanel({
             ) : quote ? (
               <>
                 <div>
-                  <p className="text-3xl font-semibold">
+                  <p className="text-3xl font-semibold tracking-tight">
                     {formatPrice(quote.price, quote.currency)}
                   </p>
                   <p
@@ -125,16 +129,19 @@ export function AssetInfoPanel({
                       positive ? "text-lime" : "text-danger",
                     )}
                   >
-                    {formatChange(quote.change)} ({formatPercent(quote.changePercent)})
+                    {formatChange(quote.change)} (
+                    {formatPercent(quote.changePercent)})
                   </p>
                 </div>
-                <dl className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-xl border border-border bg-black/20 p-3">
-                    <dt className="text-muted">Sector</dt>
-                    <dd className="font-medium">{asset.sector}</dd>
+                <dl className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="rounded-xl border border-border/80 bg-black/20 px-3 py-2.5">
+                    <dt className="text-xs text-muted">
+                      {asset.type === "index" ? "Type" : "Sector"}
+                    </dt>
+                    <dd className="font-medium">{typeLabel}</dd>
                   </div>
-                  <div className="rounded-xl border border-border bg-black/20 p-3">
-                    <dt className="text-muted">Market cap</dt>
+                  <div className="rounded-xl border border-border/80 bg-black/20 px-3 py-2.5">
+                    <dt className="text-xs text-muted">Market cap</dt>
                     <dd className="font-medium">
                       {formatMarketCap(quote.marketCap)}
                     </dd>
@@ -149,12 +156,14 @@ export function AssetInfoPanel({
               {asset.description}
             </p>
 
-            <MiniChart data={history} positive={positive} />
+            {!loading && quote ? (
+              <MiniChart data={history} positive={positive} />
+            ) : null}
 
             <a
               href={asset.officialUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="focus-ring inline-flex items-center gap-2 text-sm text-lime"
             >
               External information
@@ -163,15 +172,28 @@ export function AssetInfoPanel({
           </div>
         )}
 
-        {!mobile ? (
+        {mobile ? (
           <button
             type="button"
-            className="focus-ring mt-6 inline-flex w-fit rounded-full border border-border px-4 py-2 text-sm transition hover:border-lime/40 hover:text-lime"
+            className="focus-ring mt-5 inline-flex w-full justify-center rounded-full border border-border px-4 py-2.5 text-sm transition hover:border-lime/40 hover:text-lime"
+            onClick={() => {
+              onClose?.();
+              document
+                .getElementById("basket")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            Return to Basket
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="focus-ring mt-5 inline-flex w-fit rounded-full border border-border px-4 py-2 text-sm transition hover:border-lime/40 hover:text-lime"
             onClick={onClose}
           >
             Return to Basket
           </button>
-        ) : null}
+        )}
       </motion.aside>
     </AnimatePresence>
   );

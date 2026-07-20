@@ -7,10 +7,12 @@
   --surface-elevated: #111111;
   --border: #1c1c1c;
   --muted: #8a8a8a;
-  --lime: #c7f000;
-  --lime-dim: #9bc400;
+  --eggs-lime: #c7f000;
+  --lime: var(--eggs-lime);
+  --lime-dim: #a8cc00;
   --danger: #ff5c5c;
   --glow: rgba(199, 240, 0, 0.18);
+  --glow-strong: rgba(199, 240, 0, 0.24);
 }
 
 @theme inline {
@@ -20,7 +22,7 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-border: var(--border);
   --color-muted: var(--muted);
-  --color-lime: var(--lime);
+  --color-lime: var(--eggs-lime);
   --color-lime-dim: var(--lime-dim);
   --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
@@ -44,7 +46,7 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--lime) 35%, transparent);
+  background: color-mix(in srgb, var(--eggs-lime) 35%, transparent);
   color: white;
 }
 
@@ -66,8 +68,25 @@ body {
 
 .lime-glow {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--lime) 20%, transparent),
-    0 0 40px var(--glow);
+    0 0 0 1px color-mix(in srgb, var(--eggs-lime) 22%, transparent),
+    0 0 36px var(--glow);
+}
+
+.egg-highlight {
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 50% 0%,
+    color-mix(in srgb, var(--eggs-lime) 14%, transparent),
+    transparent 72%
+  );
+}
+
+.inspector-stage {
+  background: radial-gradient(
+    circle at 50% 42%,
+    color-mix(in srgb, var(--eggs-lime) 8%, transparent),
+    transparent 62%
+  );
 }
 
 .focus-ring {
@@ -84,7 +103,7 @@ body {
 }
 
 .ticker-track {
-  animation: ticker-scroll 40s linear infinite;
+  animation: ticker-scroll 36s linear infinite;
 }
 
 .ticker-track:hover {

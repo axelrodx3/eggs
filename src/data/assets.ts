@@ -1,13 +1,17 @@
+/** Final basket artwork dimensions (public/assets/eggs-basket.png). */
+export const BASKET_IMAGE = {
+  src: "/assets/eggs-basket.png",
+  width: 1536,
+  height: 1024,
+  aspectRatio: "3 / 2",
+} as const;
+
 export type AssetType = "stock" | "index" | "private";
 
 export type AssetHotspot = {
-  /** Horizontal center, percent of basket width */
   x: number;
-  /** Vertical center, percent of basket height */
   y: number;
-  /** Hotspot width, percent of basket width */
   width: number;
-  /** Hotspot height, percent of basket height */
   height: number;
 };
 
@@ -21,14 +25,13 @@ export type BasketAsset = {
   officialUrl: string;
   logoPath: string;
   hotspot: AssetHotspot;
-  /** Symbol for market data provider; null for private assets */
   marketDataSymbol: string | null;
   isPrivate: boolean;
 };
 
 /**
- * Hotspot coordinates are tuned for public/assets/eggs-basket.png.
- * Adjust x/y/width/height if the final artwork shifts egg positions.
+ * Hotspots tuned for public/assets/eggs-basket.png (1536×1024).
+ * Two rows of five eggs inside the basket interior.
  */
 export const basketAssets: BasketAsset[] = [
   {
@@ -40,8 +43,8 @@ export const basketAssets: BasketAsset[] = [
       "Consumer technology leader known for iPhone, services, and a global hardware ecosystem.",
     sector: "Technology",
     officialUrl: "https://www.apple.com",
-    logoPath: "/assets/logos/aapl.svg",
-    hotspot: { x: 18, y: 38, width: 14, height: 16 },
+    logoPath: "/assets/logos/apple.svg",
+    hotspot: { x: 14, y: 38, width: 12, height: 17 },
     marketDataSymbol: "AAPL",
     isPrivate: false,
   },
@@ -54,8 +57,8 @@ export const basketAssets: BasketAsset[] = [
       "Parent of Google, spanning search, cloud, AI, and digital advertising at global scale.",
     sector: "Technology",
     officialUrl: "https://abc.xyz",
-    logoPath: "/assets/logos/googl.svg",
-    hotspot: { x: 34, y: 32, width: 14, height: 16 },
+    logoPath: "/assets/logos/google.svg",
+    hotspot: { x: 30, y: 38, width: 12, height: 17 },
     marketDataSymbol: "GOOGL",
     isPrivate: false,
   },
@@ -68,8 +71,8 @@ export const basketAssets: BasketAsset[] = [
       "Semiconductor and AI infrastructure company powering data centers, gaming, and accelerated computing.",
     sector: "Technology",
     officialUrl: "https://www.nvidia.com",
-    logoPath: "/assets/logos/nvda.svg",
-    hotspot: { x: 50, y: 28, width: 14, height: 16 },
+    logoPath: "/assets/logos/nvidia.svg",
+    hotspot: { x: 46, y: 38, width: 12, height: 17 },
     marketDataSymbol: "NVDA",
     isPrivate: false,
   },
@@ -82,8 +85,8 @@ export const basketAssets: BasketAsset[] = [
       "Enterprise software, cloud, productivity, and AI platform company behind Azure and Office.",
     sector: "Technology",
     officialUrl: "https://www.microsoft.com",
-    logoPath: "/assets/logos/msft.svg",
-    hotspot: { x: 66, y: 32, width: 14, height: 16 },
+    logoPath: "/assets/logos/microsoft.svg",
+    hotspot: { x: 62, y: 38, width: 12, height: 17 },
     marketDataSymbol: "MSFT",
     isPrivate: false,
   },
@@ -96,8 +99,8 @@ export const basketAssets: BasketAsset[] = [
       "E-commerce, logistics, and cloud computing giant through AWS and consumer marketplaces.",
     sector: "Consumer / Cloud",
     officialUrl: "https://www.amazon.com",
-    logoPath: "/assets/logos/amzn.svg",
-    hotspot: { x: 82, y: 38, width: 14, height: 16 },
+    logoPath: "/assets/logos/amazon.svg",
+    hotspot: { x: 78, y: 38, width: 12, height: 17 },
     marketDataSymbol: "AMZN",
     isPrivate: false,
   },
@@ -111,7 +114,7 @@ export const basketAssets: BasketAsset[] = [
     sector: "Technology",
     officialUrl: "https://about.meta.com",
     logoPath: "/assets/logos/meta.svg",
-    hotspot: { x: 24, y: 58, width: 14, height: 16 },
+    hotspot: { x: 14, y: 54, width: 12, height: 17 },
     marketDataSymbol: "META",
     isPrivate: false,
   },
@@ -124,8 +127,8 @@ export const basketAssets: BasketAsset[] = [
       "Electric vehicle and energy company focused on manufacturing, batteries, and autonomy.",
     sector: "Automotive / Energy",
     officialUrl: "https://www.tesla.com",
-    logoPath: "/assets/logos/tsla.svg",
-    hotspot: { x: 40, y: 54, width: 14, height: 16 },
+    logoPath: "/assets/logos/tesla.svg",
+    hotspot: { x: 30, y: 54, width: 12, height: 17 },
     marketDataSymbol: "TSLA",
     isPrivate: false,
   },
@@ -139,7 +142,7 @@ export const basketAssets: BasketAsset[] = [
     sector: "Index",
     officialUrl: "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
     logoPath: "/assets/logos/sp500.svg",
-    hotspot: { x: 56, y: 54, width: 14, height: 16 },
+    hotspot: { x: 46, y: 54, width: 12, height: 17 },
     marketDataSymbol: "SPX",
     isPrivate: false,
   },
@@ -152,8 +155,8 @@ export const basketAssets: BasketAsset[] = [
       "Large-cap growth index weighted toward technology and innovation leaders listed on Nasdaq.",
     sector: "Index",
     officialUrl: "https://www.nasdaq.com/solutions/global-indexes/nasdaq-100",
-    logoPath: "/assets/logos/ndx.svg",
-    hotspot: { x: 72, y: 58, width: 14, height: 16 },
+    logoPath: "/assets/logos/nasdaq100.svg",
+    hotspot: { x: 62, y: 54, width: 12, height: 17 },
     marketDataSymbol: "NDX",
     isPrivate: false,
   },
@@ -167,7 +170,7 @@ export const basketAssets: BasketAsset[] = [
     sector: "Private Company",
     officialUrl: "https://www.spacex.com",
     logoPath: "/assets/logos/spacex.svg",
-    hotspot: { x: 50, y: 72, width: 16, height: 18 },
+    hotspot: { x: 78, y: 54, width: 12, height: 17 },
     marketDataSymbol: null,
     isPrivate: true,
   },
@@ -188,3 +191,6 @@ export const publicMarketAssets = basketAssets.filter(
 );
 
 export const defaultSelectedAssetId = basketAssets[0]?.id ?? "aapl";
+
+/** Visual order for keyboard focus through basket eggs. */
+export const basketFocusOrder = basketAssets.map((asset) => asset.id);

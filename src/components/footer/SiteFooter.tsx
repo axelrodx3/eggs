@@ -1,6 +1,7 @@
 "use client";
 
 import { Copy } from "lucide-react";
+import { SocialLinks } from "@/components/navigation/SocialLinks";
 import { siteConfig } from "@/data/site-config";
 
 export function SiteFooter() {
@@ -12,28 +13,13 @@ export function SiteFooter() {
         <div>
           <p className="text-2xl font-semibold">{siteConfig.name}</p>
           <p className="mt-2 text-lime">{siteConfig.tagline}</p>
-          <div className="mt-6 flex flex-wrap gap-4 text-sm">
-            <a
-              href={siteConfig.social.x}
-              target="_blank"
-              rel="noreferrer"
-              className="focus-ring text-muted transition hover:text-lime"
-            >
-              X
-            </a>
-            <a
-              href={siteConfig.social.telegram}
-              target="_blank"
-              rel="noreferrer"
-              className="focus-ring text-muted transition hover:text-lime"
-            >
-              Telegram
-            </a>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <SocialLinks />
             <a
               href={siteConfig.robinhoodUrl}
               target="_blank"
-              rel="noreferrer"
-              className="focus-ring text-muted transition hover:text-lime"
+              rel="noopener noreferrer"
+              className="focus-ring text-sm text-muted transition hover:text-lime"
             >
               Buy on Robinhood
             </a>

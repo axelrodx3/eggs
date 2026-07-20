@@ -13,14 +13,15 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-24"
+      className="relative overflow-hidden pt-28 pb-12 sm:pt-32 sm:pb-20"
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(199,240,0,0.12),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(199,240,0,0.08),transparent_35%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,var(--glow),transparent_42%),radial-gradient(circle_at_82%_8%,rgba(199,240,0,0.08),transparent_36%)]"
       />
-      <div className="section-shell grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+      <div className="section-shell grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
         <motion.div
+          className="order-2 lg:order-1"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
@@ -37,7 +38,7 @@ export function HeroSection() {
             <a
               href={siteConfig.robinhoodUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="focus-ring inline-flex items-center rounded-full bg-lime px-6 py-3 text-sm font-semibold text-black transition hover:bg-lime-dim"
             >
               Buy $EGGS
@@ -60,11 +61,12 @@ export function HeroSection() {
         </motion.div>
 
         <motion.div
+          className="order-1 flex justify-center lg:order-2 lg:justify-end"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
         >
-          <BasketVisual priority floating tilt />
+          <BasketVisual priority floating tilt variant="hero" />
         </motion.div>
       </div>
     </section>

@@ -1,15 +1,23 @@
 "use client";
 
 import { useRef } from "react";
-import { Maximize2, Minimize2, Move, RotateCcw, ScanSearch } from "lucide-react";
+import {
+  Maximize2,
+  Minimize2,
+  Move,
+  RotateCcw,
+  ScanSearch,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PanDirection = "left" | "right" | "up" | "down";
 
 type BasketControlsProps = {
   inspectMode: boolean;
+  panMode: boolean;
   zoom: number;
   onInspectToggle: () => void;
+  onPanToggle: () => void;
   onPan: (direction: PanDirection) => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -18,8 +26,10 @@ type BasketControlsProps = {
 
 export function BasketControls({
   inspectMode,
+  panMode,
   zoom,
   onInspectToggle,
+  onPanToggle,
   onPan,
   onZoomIn,
   onZoomOut,
@@ -28,8 +38,13 @@ export function BasketControls({
   const panStep = useRef<PanDirection[]>(["right", "down", "left", "up"]);
   const panIndex = useRef(0);
 
-  const buttonClass =
-    "focus-ring inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-xs font-medium transition hover:border-lime/40 hover:text-lime";
+  const buttonClass = (active = false) =>
+    cn(
+      "focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition sm:min-h-9",
+      active
+        ? "border-lime/60 bg-lime/10 text-lime"
+        : "border-border hover:border-lime/40 hover:text-lime",
+    );
 
   const handlePan = () => {
     const direction = panStep.current[panIndex.current % panStep.current.length];
@@ -38,29 +53,39 @@ export function BasketControls({
   };
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2">
+    <div className="mt-5 flex flex-wrap items-center gap-2">
       <button
         type="button"
-        className={cn(buttonClass, inspectMode && "border-lime/50 text-lime")}
+        className={buttonClass(inspectMode)}
         onClick={onInspectToggle}
         aria-pressed={inspectMode}
       >
         <ScanSearch className="h-4 w-4" />
-        Inspect mode
+        Inspect
       </button>
-      <button type="button" className={buttonClass} onClick={handlePan}>
+      <button
+        type="button"
+        className={buttonClass(panMode)}
+        onClick={onPanToggle}
+        aria-pressed={panMode}
+      >
         <Move className="h-4 w-4" />
-        Pan slightly
+        Pan
       </button>
-      <button type="button" className={buttonClass} onClick={onZoomIn}>
+      {panMode ? (
+        <button type="button" className={buttonClass()} onClick={handlePan}>
+          Nudge
+        </button>
+      ) : null}
+      <button type="button" className={buttonClass()} onClick={onZoomIn}>
         <Maximize2 className="h-4 w-4" />
         Zoom in
       </button>
-      <button type="button" className={buttonClass} onClick={onZoomOut}>
+      <button type="button" className={buttonClass()} onClick={onZoomOut}>
         <Minimize2 className="h-4 w-4" />
         Zoom out
       </button>
-      <button type="button" className={buttonClass} onClick={onReset}>
+      <button type="button" className={buttonClass()} onClick={onReset}>
         <RotateCcw className="h-4 w-4" />
         Reset
       </button>
