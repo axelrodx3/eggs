@@ -11,7 +11,6 @@ export function MarketTicker() {
   const { selectAsset, selectedId } = useAssetSelection();
 
   const publicItems = basketAssets.filter((asset) => !asset.isPrivate);
-  const spacex = basketAssets.find((asset) => asset.id === "spacex");
 
   const renderItem = (asset: (typeof basketAssets)[number], keySuffix = "") => {
     const symbol = asset.marketDataSymbol;
@@ -93,33 +92,6 @@ export function MarketTicker() {
           </div>
         </div>
       </div>
-
-      {spacex ? (
-        <div className="section-shell mt-3">
-          <button
-            type="button"
-            className={cn(
-              "focus-ring inline-flex w-full items-center gap-2.5 rounded-xl border bg-surface px-3 py-2 text-left transition sm:w-auto",
-              selectedId === spacex.id
-                ? "border-lime/50"
-                : "border-border hover:border-lime/35",
-            )}
-            onClick={() => selectAsset(spacex.id, { scrollToInspector: true })}
-          >
-            <AssetLogo
-              src={spacex.logoPath}
-              alt={spacex.name}
-              size={32}
-              fallbackText="SPC"
-              containerClassName="rounded-lg"
-            />
-            <div>
-              <p className="text-sm font-semibold">SpaceX</p>
-              <p className="text-xs text-muted">Private Company · No live pricing</p>
-            </div>
-          </button>
-        </div>
-      ) : null}
     </section>
   );
 }

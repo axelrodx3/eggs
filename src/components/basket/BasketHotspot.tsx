@@ -28,7 +28,7 @@ export function BasketHotspot({
   onLeave,
 }: BasketHotspotProps) {
   const label = asset.ticker ?? "Private";
-  const active = selected || hovered;
+  const showHighlight = hovered;
 
   return (
     <motion.button
@@ -41,9 +41,9 @@ export function BasketHotspot({
         "group absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-[999px] border-2 transition focus-ring pointer-events-auto",
         disabled ? "cursor-default opacity-40" : "cursor-pointer",
         debugMode && "border-lime/40 bg-lime/5",
-        active
+        showHighlight
           ? "z-20 border-lime bg-lime/12 lime-glow"
-          : "border-transparent bg-transparent hover:border-lime/60 hover:bg-lime/8",
+          : "border-transparent bg-transparent",
       )}
       style={{
         left: `${asset.hotspot.x}%`,
