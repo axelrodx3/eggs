@@ -2,23 +2,19 @@
 
 ## Basket artwork
 
-Production basket PNG:
-
 ```text
 public/assets/eggs-basket.png
 ```
 
-Source dimensions: **1536×1024** (3:2). Hotspot coordinates live in `src/data/assets.ts`.
-
 ## Logos
 
-Current files in `public/assets/logos/` are **local SVG placeholders** with brand-adjacent styling. Replace with licensed official logos when available:
+Brand logos live in `public/assets/logos/` as local SVG files.
 
 | File | Asset |
 | --- | --- |
 | `apple.svg` | Apple |
 | `google.svg` | Alphabet / Google |
-| `nvda.svg` | NVIDIA |
+| `nvidia.svg` | NVIDIA |
 | `microsoft.svg` | Microsoft |
 | `amazon.svg` | Amazon |
 | `meta.svg` | Meta |
@@ -27,4 +23,14 @@ Current files in `public/assets/logos/` are **local SVG placeholders** with bran
 | `nasdaq100.svg` | Nasdaq-100 Index |
 | `spacex.svg` | SpaceX |
 
-Legacy ticker-named files (`aapl.svg`, etc.) may be removed once all references use the names above.
+Regenerate CDN-backed logos with:
+
+```bash
+node scripts/generate-logos.cjs
+```
+
+## Social
+
+```text
+public/assets/social/dexscreener.png
+```

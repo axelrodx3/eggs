@@ -47,7 +47,7 @@ export function AssetCard({
           alt={asset.name}
           size={72}
           fallbackText={asset.ticker ?? "SPX"}
-          containerClassName="rounded-2xl bg-black/30"
+          containerClassName="rounded-2xl"
         />
       </div>
       <h3 className="mt-3 text-base font-semibold leading-snug">{asset.name}</h3>

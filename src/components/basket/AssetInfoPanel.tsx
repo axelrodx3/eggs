@@ -72,7 +72,7 @@ export function AssetInfoPanel({
             alt={asset.name}
             size={64}
             fallbackText={asset.ticker ?? "SPX"}
-            containerClassName="rounded-2xl bg-black/40"
+            containerClassName="rounded-2xl"
           />
         </div>
 

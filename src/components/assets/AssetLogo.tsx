@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -27,24 +26,28 @@ export function AssetLogo({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-surface-elevated/80",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/50 bg-white",
         containerClassName,
       )}
       style={{ width: size, height: size }}
     >
       {failed ? (
-        <span className="px-1 text-center text-[10px] font-semibold leading-none text-foreground/80">
+        <span className="px-1 text-center text-[10px] font-semibold leading-none text-black/80">
           {label}
         </span>
       ) : (
-        <Image
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={src}
           alt={alt}
           width={size}
           height={size}
-          unoptimized={src.endsWith(".svg")}
-          className={cn("h-auto w-auto max-h-[82%] max-w-[82%] object-contain", className)}
+          className={cn(
+            "block h-[78%] w-[78%] max-h-[78%] max-w-[78%] object-contain",
+            className,
+          )}
           onError={() => setFailed(true)}
+          draggable={false}
         />
       )}
     </div>
