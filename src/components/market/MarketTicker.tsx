@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { basketAssets } from "@/data/assets";
+import { AssetLogo } from "@/components/assets/AssetLogo";
 import { useMarketData } from "@/hooks/useMarketData";
 import { useAssetSelection } from "@/providers/AssetSelectionProvider";
 import { cn, formatPercent, formatPrice } from "@/lib/utils";
@@ -31,9 +31,13 @@ export function MarketTicker() {
         )}
         onClick={() => selectAsset(asset.id, { scrollToInspector: true })}
       >
-        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-border/80 bg-black/30">
-          <Image src={asset.logoPath} alt="" fill className="object-contain p-1" />
-        </div>
+        <AssetLogo
+          src={asset.logoPath}
+          alt={asset.name}
+          size={32}
+          fallbackText={asset.ticker ?? "SPX"}
+          containerClassName="rounded-lg"
+        />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-semibold">{asset.ticker}</span>
@@ -102,14 +106,13 @@ export function MarketTicker() {
             )}
             onClick={() => selectAsset(spacex.id, { scrollToInspector: true })}
           >
-            <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-border bg-black/30">
-              <Image
-                src={spacex.logoPath}
-                alt=""
-                fill
-                className="object-contain p-1"
-              />
-            </div>
+            <AssetLogo
+              src={spacex.logoPath}
+              alt={spacex.name}
+              size={32}
+              fallbackText="SPC"
+              containerClassName="rounded-lg"
+            />
             <div>
               <p className="text-sm font-semibold">SpaceX</p>
               <p className="text-xs text-muted">Private Company · No live pricing</p>

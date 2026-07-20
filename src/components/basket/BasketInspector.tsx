@@ -13,6 +13,9 @@ const MIN_ZOOM = 0.9;
 const MAX_ZOOM = 1.35;
 const PAN_STEP = 10;
 const MAX_PAN = 36;
+const HOTSPOT_DEBUG =
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_BASKET_HOTSPOT_DEBUG === "true";
 
 function clampPan(x: number, y: number) {
   return {
@@ -26,6 +29,7 @@ export function BasketInspector() {
   const { data, loading } = useMarketData();
   const [inspectMode, setInspectMode] = useState(false);
   const [panMode, setPanMode] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [resetKey, setResetKey] = useState(0);
@@ -87,8 +91,11 @@ export function BasketInspector() {
     setPan({ x: 0, y: 0 });
     setInspectMode(false);
     setPanMode(false);
+    setHoveredId(null);
     setResetKey((value) => value + 1);
   };
+
+  const debugMode = HOTSPOT_DEBUG && inspectMode;
 
   return (
     <section id="basket" className="scroll-mt-24 py-16 sm:py-24">
@@ -101,7 +108,7 @@ export function BasketInspector() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <div className="min-w-0">
-            <div className="inspector-stage relative px-1 py-2 sm:px-2">
+            <div className="inspector-stage pointer-events-auto relative px-1 py-2 sm:px-2">
               <div
                 className="relative mx-auto w-full max-w-4xl transition-transform duration-300 ease-out"
                 style={{
@@ -111,7 +118,8 @@ export function BasketInspector() {
                 <BasketVisual
                   variant="inspector"
                   floating={false}
-                  tilt={!inspectMode && !panMode}
+                  tilt={false}
+                  interactive
                   resetKey={resetKey}
                 >
                   {basketFocusOrder.map((assetId) => {
@@ -122,9 +130,17 @@ export function BasketInspector() {
                         key={asset.id}
                         asset={asset}
                         selected={selectedId === asset.id}
-                        inspectMode={inspectMode}
+                        hovered={hoveredId === asset.id}
+                        debugMode={debugMode}
+                        disabled={panMode}
                         tabIndex={basketFocusOrder.indexOf(asset.id) + 1}
                         onSelect={() => handleSelect(asset.id)}
+                        onHover={() => setHoveredId(asset.id)}
+                        onLeave={() =>
+                          setHoveredId((current) =>
+                            current === asset.id ? null : current,
+                          )
+                        }
                       />
                     );
                   })}

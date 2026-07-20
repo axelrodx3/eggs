@@ -87,6 +87,7 @@ body {
     color-mix(in srgb, var(--eggs-lime) 8%, transparent),
     transparent 62%
   );
+  pointer-events: auto;
 }
 
 .focus-ring {

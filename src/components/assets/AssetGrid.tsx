@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { basketAssets } from "@/data/assets";
+import { AssetLogo } from "@/components/assets/AssetLogo";
 import { useMarketData } from "@/hooks/useMarketData";
 import { useAssetSelection } from "@/providers/AssetSelectionProvider";
 import { cn, formatPercent } from "@/lib/utils";
@@ -40,9 +40,15 @@ export function AssetCard({
       aria-label={`${asset.name}${asset.ticker ? `, ${asset.ticker}` : ", private company"}`}
       aria-pressed={selected}
     >
-      <div className="egg-highlight absolute inset-x-6 top-2 h-20" aria-hidden />
-      <div className="relative mt-2 h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl border border-border/80 bg-black/30">
-        <Image src={asset.logoPath} alt="" fill className="object-contain p-2.5" />
+      <div className="egg-highlight pointer-events-none absolute inset-x-6 top-2 h-20" aria-hidden />
+      <div className="relative z-10 mt-2">
+        <AssetLogo
+          src={asset.logoPath}
+          alt={asset.name}
+          size={72}
+          fallbackText={asset.ticker ?? "SPX"}
+          containerClassName="rounded-2xl bg-black/30"
+        />
       </div>
       <h3 className="mt-3 text-base font-semibold leading-snug">{asset.name}</h3>
       <p className="mt-1 text-xs text-muted">

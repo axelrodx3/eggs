@@ -18,6 +18,7 @@ type BasketVisualProps = {
   tilt?: boolean;
   variant?: "hero" | "inspector";
   resetKey?: number;
+  interactive?: boolean;
   children?: React.ReactNode;
 };
 
@@ -28,6 +29,7 @@ export function BasketVisual({
   tilt = true,
   variant = "hero",
   resetKey = 0,
+  interactive = false,
   children,
 }: BasketVisualProps) {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -56,7 +58,7 @@ export function BasketVisual({
   }, [resetKey, pointerX, pointerY]);
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!tilt || reducedMotion) return;
+    if (!tilt || reducedMotion || interactive) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
     pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
@@ -88,7 +90,7 @@ export function BasketVisual({
       <motion.div
         className={cn("relative mx-auto", sizeClass)}
         style={
-          tilt && !reducedMotion
+          tilt && !reducedMotion && !interactive
             ? { rotateX, rotateY, transformStyle: "preserve-3d" }
             : undefined
         }
@@ -116,15 +118,22 @@ export function BasketVisual({
                 ? "(max-width: 1024px) 100vw, 48rem"
                 : "(max-width: 1024px) 100vw, 36rem"
             }
-            className="relative z-10 h-full w-full select-none object-contain"
+            className="pointer-events-none relative z-0 h-full w-full select-none object-contain"
             draggable={false}
           />
-          {children}
+          {children ? (
+            <div
+              className="absolute inset-0 z-20"
+              aria-hidden={false}
+            >
+              {children}
+            </div>
+          ) : null}
         </div>
         {floating ? (
           <motion.div
             aria-hidden
-            className="absolute bottom-[2%] left-1/2 h-6 w-[50%] -translate-x-1/2 rounded-[100%] bg-black/60 blur-2xl sm:h-8 sm:w-[55%]"
+            className="pointer-events-none absolute bottom-[2%] left-1/2 z-0 h-6 w-[50%] -translate-x-1/2 rounded-[100%] bg-black/60 blur-2xl sm:h-8 sm:w-[55%]"
             animate={
               !reducedMotion
                 ? { opacity: [0.3, 0.5, 0.3], scaleX: [0.94, 1.04, 0.94] }

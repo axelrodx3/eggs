@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import type { BasketAsset } from "@/data/assets";
 import type { QuoteChange } from "@/lib/market-data/types";
+import { AssetLogo } from "@/components/assets/AssetLogo";
 import { MiniChart } from "@/components/market/MiniChart";
 import {
   cn,
@@ -66,12 +66,13 @@ export function AssetInfoPanel({
           </button>
         ) : null}
 
-        <div className="relative mx-auto h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-border bg-black/40">
-          <Image
+        <div className="mx-auto shrink-0">
+          <AssetLogo
             src={asset.logoPath}
-            alt=""
-            fill
-            className="object-contain p-2"
+            alt={asset.name}
+            size={64}
+            fallbackText={asset.ticker ?? "SPX"}
+            containerClassName="rounded-2xl bg-black/40"
           />
         </div>
 

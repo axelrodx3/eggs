@@ -17,6 +17,9 @@ export const siteConfig = {
     /** Set when the official Dexscreener URL is available. */
     dexscreener: null as string | null,
   },
+  socialAssets: {
+    dexscreener: "/assets/social/dexscreener.png",
+  },
   contractAddress: null as string | null,
   nav: [
     { id: "basket", label: "Basket" },
