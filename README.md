@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# $EGGS
 
-## Getting Started
+One-page launch site for the **$EGGS** memecoin — premium black-and-lime aesthetic with an interactive basket inspector and market watch.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS v4
+- Framer Motion
+- Lucide React
+- Recharts (mini charts)
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Basket artwork
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Place the transparent high-resolution basket PNG at:
 
-## Learn More
+```text
+public/assets/eggs-basket.png
+```
 
-To learn more about Next.js, take a look at the following resources:
+Until that file exists, the site renders a documented placeholder in the hero and inspector.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Hotspot coordinates live in `src/data/assets.ts` and can be tuned after the final artwork is inserted.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Market data
 
-## Deploy on Vercel
+Market quotes are fetched through a server route:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+GET /api/market
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Configure provider settings in `.env.local` (see `.env.example`):
+
+```env
+MARKET_DATA_PROVIDER=mock
+MARKET_DATA_API_KEY=
+```
+
+### Connecting a real provider later
+
+1. Implement a new provider in `src/lib/market-data/` that satisfies `MarketDataProvider`.
+2. Register it in `src/lib/market-data/provider.ts`.
+3. Set `MARKET_DATA_PROVIDER` in the server environment.
+4. Keep API keys server-side only — the browser should never receive provider secrets.
+
+Development uses clearly labeled **demo data** via the mock provider. Do not present demo quotes as live market data in production.
+
+## Editable content
+
+| File | Purpose |
+| --- | --- |
+| `src/data/site-config.ts` | Brand copy, Robinhood URL, social links |
+| `src/data/assets.ts` | Basket assets + hotspot coordinates |
+| `src/data/tokenomics.ts` | Distribution categories / percentages |
+| `src/data/faq.ts` | FAQ entries |
+
+## Scripts
+
+```bash
+npm run lint
+npm run build
+```
+
+## Git remote
+
+```text
+origin  https://github.com/axelrodx3/eggs.git
+```
+
+## Disclaimers
+
+This site is informational. Holding $EGGS does not automatically constitute ownership of the displayed securities. No wallet connection, rewards claiming, or live token metrics are implemented on this page.
