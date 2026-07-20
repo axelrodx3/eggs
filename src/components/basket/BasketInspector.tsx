@@ -205,8 +205,7 @@ export function BasketInspector() {
                         if (!asset) return null;
                         const hovered = hoveredId === asset.id;
                         const selected = selectedId === asset.id;
-                        const dimmed =
-                          anyHighlight && !hovered && !selected;
+                        const dimmed = anyHighlight && !hovered;
                         return (
                           <BasketHotspot
                             key={asset.id}

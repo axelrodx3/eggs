@@ -37,7 +37,7 @@ export function BasketHotspot({
   const rotation = hotspot.rotation ?? 0;
   const priority = hotspot.priority ?? 10;
   const tickerLabel = asset.ticker ?? "Private Company";
-  const active = hovered || selected;
+  const showHighlight = hovered;
   const tooltipAbove = hotspot.y >= 42;
   const visualWidthPct = (hotspot.width / hitWidth) * 100;
   const visualHeightPct = (hotspot.height / hitHeight) * 100;
@@ -62,7 +62,7 @@ export function BasketHotspot({
         width: `${hitWidth}%`,
         height: `${hitHeight}%`,
         transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        zIndex: active ? priority + 30 : priority,
+        zIndex: showHighlight ? priority + 30 : priority,
         touchAction: panMode ? "none" : "manipulation",
       }}
       onClick={(event) => {
@@ -81,11 +81,9 @@ export function BasketHotspot({
       <motion.span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border transition-[box-shadow,border-color,background-color]",
-          selected && !hovered && "border-lime/75 bg-lime/8",
-          hovered &&
+          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border border-transparent bg-transparent transition-[box-shadow,border-color,background-color]",
+          showHighlight &&
             "border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.2)]",
-          !active && "border-transparent bg-transparent",
           "group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
         )}
         style={{
@@ -95,17 +93,17 @@ export function BasketHotspot({
         initial={false}
         animate={{
           x: "-50%",
-          y: hovered ? "-56%" : "-50%",
-          scale: hovered ? 1.05 : selected ? 1.02 : 1,
+          y: showHighlight ? "-56%" : "-50%",
+          scale: showHighlight ? 1.05 : 1,
           opacity: dimmed ? 0.9 : 1,
         }}
         transition={{
-          duration: hovered ? 0.16 : 0.14,
+          duration: showHighlight ? 0.16 : 0.14,
           ease: "easeOut",
         }}
       />
 
-      {hovered && !panMode ? (
+      {showHighlight && !panMode ? (
         <span
           className={cn(
             "pointer-events-none absolute left-1/2 z-40 min-w-[7.5rem] -translate-x-1/2 rounded-xl border border-border bg-background/95 px-3 py-2 text-center shadow-lg",
