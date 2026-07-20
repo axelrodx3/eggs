@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { siteConfig } from "@/data/site-config";
 import { cn } from "@/lib/utils";
 
@@ -27,13 +26,15 @@ function TelegramIcon({ className }: { className?: string }) {
 
 function DexscreenerIcon({ className }: { className?: string }) {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={siteConfig.socialAssets.dexscreener}
       alt=""
-      width={20}
-      height={20}
-      className={cn("h-5 w-5 object-contain", className)}
+      width={22}
+      height={22}
+      className={cn("block h-[22px] w-[22px] shrink-0 object-contain", className)}
       aria-hidden
+      draggable={false}
     />
   );
 }
@@ -50,6 +51,7 @@ type SocialItem = {
   label: string;
   href: string | null;
   icon: React.ReactNode;
+  disabledDim?: boolean;
 };
 
 export function SocialLinks({
@@ -70,12 +72,13 @@ export function SocialLinks({
       label: "Telegram",
       href: siteConfig.social.telegram,
       icon: <TelegramIcon className={iconClassName} />,
+      disabledDim: true,
     },
     {
       id: "dexscreener",
       label: "Dexscreener",
       href: siteConfig.social.dexscreener,
-      icon: <DexscreenerIcon className={iconClassName} />,
+      icon: <DexscreenerIcon />,
     },
   ];
 
@@ -83,7 +86,7 @@ export function SocialLinks({
     <div className={cn("flex items-center gap-1.5", className)}>
       {items.map((item) => {
         const baseClass = cn(
-          "focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-transparent text-muted transition hover:border-lime/30 hover:bg-lime/5 hover:text-lime hover:shadow-[0_0_18px_rgba(199,240,0,0.12)]",
+          "focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-transparent transition hover:border-lime/30 hover:bg-lime/5 hover:shadow-[0_0_18px_rgba(199,240,0,0.12)]",
           buttonClassName,
         );
 
@@ -94,7 +97,7 @@ export function SocialLinks({
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={baseClass}
+              className={cn(baseClass, "text-muted hover:text-lime")}
               aria-label={item.label}
               title={item.label}
             >
@@ -110,7 +113,11 @@ export function SocialLinks({
           <button
             key={item.id}
             type="button"
-            className={cn(baseClass, "cursor-not-allowed opacity-45")}
+            className={cn(
+              baseClass,
+              "cursor-not-allowed",
+              item.disabledDim ? "text-muted/45" : "opacity-100",
+            )}
             aria-label={item.label}
             title={item.label}
             disabled
