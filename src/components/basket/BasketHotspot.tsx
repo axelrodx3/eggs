@@ -37,7 +37,7 @@ export function BasketHotspot({
   const rotation = hotspot.rotation ?? 0;
   const priority = hotspot.priority ?? 10;
   const tickerLabel = asset.displayTicker ?? "Private Company";
-  const showHighlight = hovered;
+  const showHighlight = hovered || selected;
   const tooltipAbove = hotspot.y >= 42;
   const visualWidthPct = (hotspot.width / hitWidth) * 100;
   const visualHeightPct = (hotspot.height / hitHeight) * 100;

@@ -318,7 +318,7 @@ export function getProviderSymbol(
   return asset.providerSymbols[provider] ?? null;
 }
 
-export const defaultSelectedAssetId = basketAssets[0]?.id ?? "aapl";
+export const defaultSelectedAssetId = "aapl";
 
 /** Visual order for keyboard focus through basket eggs. */
 export const basketFocusOrder = basketAssets.map((asset) => asset.id);
