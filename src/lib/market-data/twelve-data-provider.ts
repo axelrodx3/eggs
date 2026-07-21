@@ -38,6 +38,8 @@ import { getServerCacheTtlMs } from "./config";
 
 const TWELVE_DATA_BASE = "https://api.twelvedata.com";
 
+let quoteChunkRotation = 0;
+
 const twelveDataErrorSchema = z.object({
   code: z.union([z.number(), z.string()]).optional(),
   message: z.string().optional(),
@@ -82,21 +84,6 @@ const twelveDataTimeSeriesSchema = z.object({
         volume: z.string().optional(),
       }),
     )
-    .optional(),
-  status: z.string().optional(),
-  code: z.union([z.number(), z.string()]).optional(),
-  message: z.string().optional(),
-});
-
-const twelveDataStatisticsSchema = z.object({
-  statistics: z
-    .object({
-      valuations_metrics: z
-        .object({
-          market_capitalization: z.union([z.string(), z.number()]).optional(),
-        })
-        .optional(),
-    })
     .optional(),
   status: z.string().optional(),
   code: z.union([z.number(), z.string()]).optional(),
@@ -280,71 +267,46 @@ function normalizeQuoteEntry(
   };
 }
 
-async function fetchMarketCap(symbol: string): Promise<number | null> {
-  const cacheKey = `marketcap:${symbol}`;
-  const cached = getCached<number | null>(cacheKey);
-  if (cached !== null) return cached;
-
-  const apiKey = getApiKey();
-  const url = `${TWELVE_DATA_BASE}/statistics?symbol=${encodeURIComponent(symbol)}&apikey=${apiKey}`;
-  try {
-    const json = await fetchJsonWithRetry<unknown>(url, "Statistics");
-    const parsed = twelveDataStatisticsSchema.safeParse(json);
-    if (!parsed.success) return setCached(cacheKey, null, MARKET_REFRESH_CONFIG.marketCapCacheMs);
-    const cap = parseProviderNumber(
-      parsed.data.statistics?.valuations_metrics?.market_capitalization,
-    );
-    return setCached(cacheKey, cap, MARKET_REFRESH_CONFIG.marketCapCacheMs);
-  } catch {
-    return setCached(cacheKey, null, MARKET_REFRESH_CONFIG.marketCapCacheMs);
-  }
-}
-
-async function fetchBatchQuotes(): Promise<MarketQuotesResponse> {
-  const fetchedAt = new Date().toISOString();
+async function fetchQuoteChunk(
+  chunkAssetIds: string[],
+  fetchedAt: string,
+): Promise<Record<string, MarketQuote>> {
   const assets = getPublicMarketAssets();
   const symbolMap = buildProviderSymbolMap("twelve-data");
-  const symbols = [...symbolMap.values()];
-  if (symbols.length === 0) {
-    return {
-      quotesByAssetId: {},
-      status: "error",
-      provider: "twelve-data",
-      marketState: "unknown",
-      lastUpdated: null,
-      fetchedAt,
-      isStale: false,
-      error: "No quotable assets configured.",
-      errorCode: "provider_unavailable",
-      isDevelopmentMock: false,
-    };
-  }
+  const symbols = chunkAssetIds
+    .map((id) => symbolMap.get(id))
+    .filter((symbol): symbol is string => Boolean(symbol));
+
+  if (symbols.length === 0) return {};
 
   const apiKey = getApiKey();
   const url = `${TWELVE_DATA_BASE}/quote?symbol=${encodeURIComponent(symbols.join(","))}&apikey=${apiKey}`;
   const json = await fetchJsonWithRetry<unknown>(url, "Quote");
 
   const topLevelError = twelveDataErrorSchema.safeParse(json);
-  if (
-    topLevelError.success &&
-    topLevelError.data.status === "error" &&
-    !("symbol" in (json as object))
-  ) {
-    throw new MarketDataError(
-      "provider_unavailable",
-      topLevelError.data.message ?? "Provider returned an error.",
-    );
+  if (topLevelError.success && topLevelError.data.status === "error") {
+    const code = topLevelError.data.code;
+    if (code === 429 || code === "429") {
+      throw new MarketDataError("rate_limit", "Rate limit reached.", {
+        retryAfterMs: 60_000,
+      });
+    }
+    if (!("symbol" in (json as object))) {
+      throw new MarketDataError(
+        "provider_unavailable",
+        topLevelError.data.message ?? "Provider returned an error.",
+      );
+    }
   }
 
   const quotesByAssetId: Record<string, MarketQuote> = {};
   const reverseMap = new Map<string, string>();
-  for (const [assetId, symbol] of symbolMap.entries()) {
-    reverseMap.set(symbol.toUpperCase(), assetId);
+  for (const assetId of chunkAssetIds) {
+    const symbol = symbolMap.get(assetId);
+    if (symbol) reverseMap.set(symbol.toUpperCase(), assetId);
   }
 
-  const marketCapPromises = new Map<string, Promise<number | null>>();
-
-  const processEntry = async (
+  const processEntry = (
     symbolKey: string,
     entry: z.infer<typeof twelveDataQuoteSchema>,
   ) => {
@@ -383,14 +345,6 @@ async function fetchBatchQuotes(): Promise<MarketQuotesResponse> {
       return;
     }
 
-    let marketCap: number | null = null;
-    if (asset.assetType === "equity") {
-      if (!marketCapPromises.has(symbolKey)) {
-        marketCapPromises.set(symbolKey, fetchMarketCap(symbolKey));
-      }
-      marketCap = await marketCapPromises.get(symbolKey)!;
-    }
-
     quotesByAssetId[assetId] = normalizeQuoteEntry(
       assetId,
       asset.name,
@@ -398,41 +352,82 @@ async function fetchBatchQuotes(): Promise<MarketQuotesResponse> {
       asset.assetType === "index" ? "index" : "equity",
       parsed.data,
       fetchedAt,
-      marketCap,
+      null,
     );
   };
 
   if (typeof json === "object" && json !== null && "symbol" in json) {
     const single = twelveDataQuoteSchema.safeParse(json);
     if (single.success && single.data.symbol) {
-      await processEntry(single.data.symbol, single.data);
+      processEntry(single.data.symbol, single.data);
     }
   } else if (typeof json === "object" && json !== null) {
-    const entries = Object.entries(json as Record<string, unknown>);
-    await Promise.all(
-      entries.map(([key, value]) => {
-        if (key === "status" || key === "code" || key === "message") {
-          return Promise.resolve();
-        }
-        return processEntry(key, value as z.infer<typeof twelveDataQuoteSchema>);
-      }),
+    for (const [key, value] of Object.entries(json as Record<string, unknown>)) {
+      if (key === "status" || key === "code" || key === "message") continue;
+      processEntry(key, value as z.infer<typeof twelveDataQuoteSchema>);
+    }
+  }
+
+  for (const assetId of chunkAssetIds) {
+    if (quotesByAssetId[assetId]) continue;
+    const asset = assets.find((a) => a.id === assetId);
+    if (!asset) continue;
+    quotesByAssetId[assetId] = unavailableQuote(
+      assetId,
+      asset.name,
+      asset.displayTicker ?? assetId.toUpperCase(),
+      asset.assetType === "index" ? "index" : "equity",
+      asset.assetType === "index"
+        ? "Index data unavailable on current provider plan."
+        : "Symbol unavailable.",
+      fetchedAt,
     );
   }
 
-  for (const asset of assets) {
-    if (!quotesByAssetId[asset.id]) {
-      quotesByAssetId[asset.id] = unavailableQuote(
-        asset.id,
-        asset.name,
-        asset.displayTicker ?? asset.id.toUpperCase(),
-        asset.assetType === "index" ? "index" : "equity",
-        asset.assetType === "index"
-          ? "Index data unavailable on current provider plan."
-          : "Symbol unavailable.",
-        fetchedAt,
-      );
-    }
+  return quotesByAssetId;
+}
+
+async function fetchBatchQuotes(
+  existingQuotes: Record<string, MarketQuote> = {},
+): Promise<MarketQuotesResponse> {
+  const fetchedAt = new Date().toISOString();
+  const assets = getPublicMarketAssets();
+  const assetIds = assets.map((a) => a.id);
+  if (assetIds.length === 0) {
+    return {
+      quotesByAssetId: {},
+      status: "error",
+      provider: "twelve-data",
+      marketState: "unknown",
+      lastUpdated: null,
+      fetchedAt,
+      isStale: false,
+      error: "No quotable assets configured.",
+      errorCode: "provider_unavailable",
+      isDevelopmentMock: false,
+    };
   }
+
+  const chunkSize = MARKET_REFRESH_CONFIG.quoteChunkSize;
+  const totalChunks = Math.ceil(assetIds.length / chunkSize);
+  const hasBootstrapGap = assetIds.some((id) => !existingQuotes[id]?.price);
+  const chunkIndex = hasBootstrapGap
+    ? Math.floor(
+        assetIds.findIndex((id) => !existingQuotes[id]?.price) / chunkSize,
+      )
+    : quoteChunkRotation % totalChunks;
+  if (!hasBootstrapGap) quoteChunkRotation += 1;
+
+  const chunkAssetIds = assetIds.slice(
+    chunkIndex * chunkSize,
+    (chunkIndex + 1) * chunkSize,
+  );
+
+  const freshChunk = await fetchQuoteChunk(chunkAssetIds, fetchedAt);
+  const quotesByAssetId: Record<string, MarketQuote> = {
+    ...existingQuotes,
+    ...freshChunk,
+  };
 
   const validQuotes = Object.values(quotesByAssetId).filter((q) => !q.unavailable);
   const marketState = getAggregateMarketState(Object.values(quotesByAssetId));
@@ -576,7 +571,8 @@ export async function getTwelveDataQuotes(): Promise<MarketQuotesResponse> {
 
   return dedupeRequest(cacheKey, async () => {
     try {
-      const fresh = await fetchBatchQuotes();
+      const existing = stale?.value.quotesByAssetId ?? {};
+      const fresh = await fetchBatchQuotes(existing);
       return setCached(cacheKey, fresh, ttl);
     } catch (error) {
       if (stale?.value) {

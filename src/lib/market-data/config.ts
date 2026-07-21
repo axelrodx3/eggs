@@ -1,9 +1,9 @@
 /** Centralized refresh, cache, and request timing configuration. */
 export const MARKET_REFRESH_CONFIG = {
   /** During regular U.S. session (9:30 AM – 4:00 PM ET). */
-  openMs: 30_000,
+  openMs: 60_000,
   /** Premarket and after-hours. */
-  extendedHoursMs: 60_000,
+  extendedHoursMs: 90_000,
   /** Market closed (weekends, holidays, overnight). */
   closedMs: 10 * 60_000,
   /** Upstream HTTP request timeout. */
@@ -11,14 +11,17 @@ export const MARKET_REFRESH_CONFIG = {
   /** Client/server stale threshold after a successful fetch. */
   staleAfterMs: 90_000,
   /** Server-side quote cache TTL during open session. */
-  serverCacheOpenMs: 20_000,
-  serverCacheExtendedMs: 45_000,
+  serverCacheOpenMs: 60_000,
+  serverCacheExtendedMs: 90_000,
   serverCacheClosedMs: 8 * 60_000,
   /** Market cap statistics cache (slow-moving). */
   marketCapCacheMs: 6 * 60 * 60_000,
   /** Historical candle cache per asset+range. */
   historyCacheMs: 5 * 60_000,
-  /** Max retries for transient failures (not 429). */
+  /** Max symbols per Twelve Data quote request (free tier ≈8 credits/min). */
+  quoteChunkSize: 4,
+  /** Pause between chunked quote requests when bootstrapping. */
+  quoteChunkDelayMs: 61_000,
   maxRetries: 2,
   retryBaseMs: 800,
 } as const;
