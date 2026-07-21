@@ -1,29 +1,29 @@
 import "server-only";
 
 import { mockMarketProvider } from "./mock-provider";
-import { twelveDataProvider } from "./twelve-data-provider";
+import { finnhubProvider } from "./finnhub";
 import type { MarketDataProviderInterface } from "./types";
 import { MarketDataError } from "./errors";
 
 export function resolveMarketDataProvider(): MarketDataProviderInterface {
   const provider =
     process.env.MARKET_DATA_PROVIDER ??
-    (process.env.NODE_ENV === "production" ? "twelve-data" : "mock");
+    (process.env.NODE_ENV === "production" ? "finnhub" : "mock");
 
   switch (provider) {
-    case "twelve-data":
-      return twelveDataProvider;
+    case "finnhub":
+      return finnhubProvider;
     case "mock":
       return mockMarketProvider;
     default:
-      return twelveDataProvider;
+      return finnhubProvider;
   }
 }
 
 export async function fetchMarketQuotesResponse() {
   const provider = resolveMarketDataProvider();
 
-  if (provider.name === "twelve-data" && !process.env.TWELVE_DATA_API_KEY?.trim()) {
+  if (provider.name === "finnhub" && !process.env.FINNHUB_API_KEY?.trim()) {
     if (process.env.NODE_ENV === "production") {
       return {
         quotesByAssetId: {},
@@ -47,7 +47,7 @@ export async function fetchMarketQuotesResponse() {
       lastUpdated: null,
       fetchedAt: new Date().toISOString(),
       isStale: false,
-      error: "Configure TWELVE_DATA_API_KEY in .env.local for live quotes.",
+      error: "Configure FINNHUB_API_KEY in .env.local for live quotes.",
       errorCode: "missing_api_key",
       isDevelopmentMock: false,
     };
@@ -60,7 +60,7 @@ export async function fetchMarketQuotesResponse() {
       if (process.env.NODE_ENV === "production") {
         console.error("[market-data] API key not configured.");
       } else {
-        console.warn("[market-data] TWELVE_DATA_API_KEY not configured.");
+        console.warn("[market-data] FINNHUB_API_KEY not configured.");
       }
       return {
         quotesByAssetId: {},
@@ -73,7 +73,7 @@ export async function fetchMarketQuotesResponse() {
         error:
           process.env.NODE_ENV === "production"
             ? "Market data unavailable."
-            : "Configure TWELVE_DATA_API_KEY in .env.local.",
+            : "Configure FINNHUB_API_KEY in .env.local.",
         errorCode: "missing_api_key",
         isDevelopmentMock: false,
       };
@@ -103,7 +103,7 @@ export async function fetchMarketQuotesResponse() {
 export async function fetchMarketHistoryResponse(assetId: string, range: string) {
   const provider = resolveMarketDataProvider();
 
-  if (provider.name === "twelve-data" && !process.env.TWELVE_DATA_API_KEY?.trim()) {
+  if (provider.name === "finnhub" && !process.env.FINNHUB_API_KEY?.trim()) {
     return {
       assetId,
       range,
@@ -112,7 +112,7 @@ export async function fetchMarketHistoryResponse(assetId: string, range: string)
       error:
         process.env.NODE_ENV === "production"
           ? "Market data unavailable."
-          : "Configure TWELVE_DATA_API_KEY in .env.local.",
+          : "Configure FINNHUB_API_KEY in .env.local.",
       errorCode: "missing_api_key",
       fetchedAt: new Date().toISOString(),
       periodChangePercent: null,

@@ -2,18 +2,18 @@
 
 ## Provider
 
-**Primary provider:** [Twelve Data](https://twelvedata.com/)
+**Primary provider:** [Finnhub](https://finnhub.io/)
 
-The integration lives under `src/lib/market-data/` with a provider abstraction so another source (Massive, Finnhub) can be substituted without UI changes.
+The integration lives under `src/lib/market-data/` with a provider abstraction so another source can be substituted without UI changes.
 
 ## Environment variables
 
 | Variable | Description |
 |----------|-------------|
-| `MARKET_DATA_PROVIDER` | `twelve-data` (production default) or `mock` (development/tests only) |
-| `TWELVE_DATA_API_KEY` | Server-only API key from Twelve Data |
+| `MARKET_DATA_PROVIDER` | `finnhub` (production default) or `mock` (development/tests only) |
+| `FINNHUB_API_KEY` | Server-only API key from Finnhub |
 
-**Vercel:** add `TWELVE_DATA_API_KEY` in **Project Settings → Environment Variables** for Production and Preview. Redeploy after adding the key.
+**Vercel:** add `FINNHUB_API_KEY` in **Project Settings → Environment Variables** for Production and Preview. Redeploy after adding the key.
 
 Never:
 
@@ -23,11 +23,10 @@ Never:
 
 ## Endpoints used
 
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /quote` | Batch quotes for all public assets |
-| `GET /time_series` | Historical OHLCV candles |
-| `GET /statistics` | Market capitalization (equities, cached ~6 hours) |
+| Finnhub endpoint | Purpose |
+|------------------|---------|
+| `GET /quote` | Current quote per symbol |
+| `GET /stock/candle` | Historical OHLCV candles |
 
 Internal Next.js routes:
 
@@ -36,8 +35,8 @@ Internal Next.js routes:
 
 ## Symbol mapping
 
-| Asset | Display | Twelve Data symbol |
-|-------|---------|-------------------|
+| Asset | Display | Finnhub symbol |
+|-------|---------|----------------|
 | Apple | AAPL | AAPL |
 | Alphabet | GOOGL | GOOGL |
 | NVIDIA | NVDA | NVDA |
@@ -45,44 +44,37 @@ Internal Next.js routes:
 | Amazon | AMZN | AMZN |
 | Meta | META | META |
 | Tesla | TSLA | TSLA |
-| S&P 500 | SPX | SPX |
-| Nasdaq-100 | NDX | NDX |
+| S&P 500 | SPX | ^GSPC |
+| Nasdaq-100 | NDX | ^NDX |
 | SpaceX | — | *(excluded — private company)* |
 
-**Index note:** SPX and NDX require index coverage on your Twelve Data plan. If unavailable, the UI shows *“Index data unavailable on current provider plan”* — we do **not** substitute SPY or QQQ.
+**Index note:** Finnhub’s free retail API may not return live index quotes for ^GSPC / ^NDX. If unavailable, the UI shows *“Index data unavailable on current provider plan”* — we do **not** substitute ETF proxies as index pricing.
 
-## Data timing and labels
-
-- **Free / basic plans:** U.S. equities are typically **delayed (~15 minutes)**. The UI labels this as “Delayed 15 min”, not “Live”.
-- **Indexes:** availability and delay depend on plan tier.
-- **Market state:** derived from provider `is_market_open` when present, with a U.S. Eastern hours fallback (including holidays in `market-hours.ts`).
-- **Timestamps:** shown in Eastern Time from the provider quote timestamp when available.
-
-## Refresh and caching
+## Caching
 
 Configured in `src/lib/market-data/config.ts`:
 
-| Session | Client poll | Server cache |
-|---------|-------------|--------------|
-| Regular hours | ~30s | ~20s |
-| Extended hours | ~60s | ~45s |
-| Closed | ~10 min | ~8 min |
+| Setting | Value |
+|---------|-------|
+| Server quote cache | 90–120 seconds |
+| Client poll interval | 90–120 seconds |
+| History cache | ~5 minutes |
 
-Historical candles are cached ~5 minutes per asset/range. Market cap statistics ~6 hours.
+In-memory server cache is per serverless instance on Vercel (not globally shared).
 
 ## Rate limits
 
-HTTP **429** responses are not retried aggressively. Transient errors use limited exponential backoff (max 2 retries). Request deduplication prevents duplicate in-flight calls.
+Finnhub free tier: 60 API calls/minute. The service fetches one quote per public asset in parallel (~9 calls), cached for 90 seconds. HTTP **429** responses are not retried aggressively.
 
 ## Attribution
 
-Footer includes: *“Market data provided by Twelve Data.”*
+Footer includes: *“Market data provided by Finnhub.”*
 
-Review [Twelve Data terms](https://twelvedata.com/) for your plan’s redistribution and display requirements before public production use. A free development tier may not permit unrestricted public redistribution — upgrade if required.
+Review [Finnhub terms](https://finnhub.io/terms-of-service) for redistribution requirements before public production use.
 
 ## Mock provider
 
-Set `MARKET_DATA_PROVIDER=mock` for local development without an API key. Mock mode shows a **Development mock data** indicator and must not be used in production builds by default.
+Set `MARKET_DATA_PROVIDER=mock` for local development without an API key. Mock mode shows a **Development mock data** indicator.
 
 ## Tests
 

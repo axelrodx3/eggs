@@ -14,7 +14,7 @@ export type DataStateLabel =
   | "development"
   | "index_unavailable";
 
-export type MarketProviderName = "twelve-data" | "mock";
+export type MarketProviderName = "finnhub" | "mock";
 
 export type MarketQuote = {
   assetId: string;

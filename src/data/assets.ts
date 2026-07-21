@@ -9,9 +9,8 @@ export const BASKET_IMAGE = {
 export type AssetType = "equity" | "index" | "private";
 
 export type ProviderSymbols = {
-  twelveData?: string;
-  massive?: string;
   finnhub?: string;
+  massive?: string;
 };
 
 export type AssetHotspot = {
@@ -52,16 +51,15 @@ export type BasketAsset = {
  * Hotspots manually calibrated for public/assets/eggs-basket.png (1536×1024).
  * x/y = egg center; width/height = visual highlight; hitWidth/hitHeight = tap target.
  *
- * Twelve Data provider symbols verified via /symbol_search during integration:
- * - Equities use standard U.S. tickers.
- * - SPX / NDX are index symbols (availability depends on plan tier).
+ * Finnhub provider symbols — display tickers (SPX, NDX) are separate from provider symbols.
+ * Index symbols ^GSPC / ^NDX may be unavailable on the free retail plan.
  */
 export const basketAssets: BasketAsset[] = [
   {
     id: "aapl",
     name: "Apple",
     displayTicker: "AAPL",
-    providerSymbols: { twelveData: "AAPL", finnhub: "AAPL" },
+    providerSymbols: { finnhub: "AAPL" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -85,7 +83,7 @@ export const basketAssets: BasketAsset[] = [
     id: "googl",
     name: "Alphabet",
     displayTicker: "GOOGL",
-    providerSymbols: { twelveData: "GOOGL", finnhub: "GOOGL" },
+    providerSymbols: { finnhub: "GOOGL" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -109,7 +107,7 @@ export const basketAssets: BasketAsset[] = [
     id: "nvda",
     name: "NVIDIA",
     displayTicker: "NVDA",
-    providerSymbols: { twelveData: "NVDA", finnhub: "NVDA" },
+    providerSymbols: { finnhub: "NVDA" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -133,7 +131,7 @@ export const basketAssets: BasketAsset[] = [
     id: "msft",
     name: "Microsoft",
     displayTicker: "MSFT",
-    providerSymbols: { twelveData: "MSFT", finnhub: "MSFT" },
+    providerSymbols: { finnhub: "MSFT" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -157,7 +155,7 @@ export const basketAssets: BasketAsset[] = [
     id: "amzn",
     name: "Amazon",
     displayTicker: "AMZN",
-    providerSymbols: { twelveData: "AMZN", finnhub: "AMZN" },
+    providerSymbols: { finnhub: "AMZN" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -181,7 +179,7 @@ export const basketAssets: BasketAsset[] = [
     id: "meta",
     name: "Meta",
     displayTicker: "META",
-    providerSymbols: { twelveData: "META", finnhub: "META" },
+    providerSymbols: { finnhub: "META" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -205,7 +203,7 @@ export const basketAssets: BasketAsset[] = [
     id: "tsla",
     name: "Tesla",
     displayTicker: "TSLA",
-    providerSymbols: { twelveData: "TSLA", finnhub: "TSLA" },
+    providerSymbols: { finnhub: "TSLA" },
     assetType: "equity",
     exchange: "NASDAQ",
     description:
@@ -229,7 +227,7 @@ export const basketAssets: BasketAsset[] = [
     id: "sp500",
     name: "S&P 500 Index",
     displayTicker: "SPX",
-    providerSymbols: { twelveData: "SPX" },
+    providerSymbols: { finnhub: "^GSPC" },
     assetType: "index",
     description:
       "Broad U.S. large-cap benchmark tracking roughly 500 leading domestic companies.",
@@ -252,7 +250,7 @@ export const basketAssets: BasketAsset[] = [
     id: "ndx",
     name: "Nasdaq-100 Index",
     displayTicker: "NDX",
-    providerSymbols: { twelveData: "NDX" },
+    providerSymbols: { finnhub: "^NDX" },
     assetType: "index",
     description:
       "Large-cap growth index weighted toward technology and innovation leaders listed on Nasdaq.",
@@ -314,14 +312,10 @@ export const publicMarketAssetIds = publicMarketAssets.map((asset) => asset.id);
 
 export function getProviderSymbol(
   asset: BasketAsset,
-  provider: "twelveData" | "massive" | "finnhub" | "twelve-data" | "massive" | "finnhub",
+  provider: "finnhub" | "massive",
 ): string | null {
   if (asset.isPrivate) return null;
-  const key =
-    provider === "twelve-data" || provider === "twelveData"
-      ? "twelveData"
-      : provider;
-  return asset.providerSymbols[key as keyof ProviderSymbols] ?? null;
+  return asset.providerSymbols[provider] ?? null;
 }
 
 export const defaultSelectedAssetId = basketAssets[0]?.id ?? "aapl";

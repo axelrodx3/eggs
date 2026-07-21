@@ -52,12 +52,12 @@ export function SiteFooter() {
           <p className="text-xs text-muted">
             Market data provided by{" "}
             <a
-              href="https://twelvedata.com/"
+              href="https://finnhub.io/"
               target="_blank"
               rel="noopener noreferrer"
               className="underline-offset-2 hover:text-lime hover:underline"
             >
-              Twelve Data
+              Finnhub
             </a>
             . Quotes may be delayed and are not investment advice.
           </p>

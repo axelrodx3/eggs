@@ -40,7 +40,7 @@ export function assertChartRange(range: string): ChartRange {
 }
 
 export function buildProviderSymbolMap(
-  provider: "twelve-data" | "massive" | "finnhub",
+  provider: "finnhub" | "massive",
 ): Map<string, string> {
   const map = new Map<string, string>();
   for (const asset of getPublicMarketAssets()) {
