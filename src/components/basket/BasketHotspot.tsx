@@ -36,7 +36,7 @@ export function BasketHotspot({
   const hitHeight = hotspot.hitHeight ?? hotspot.height * 1.14;
   const rotation = hotspot.rotation ?? 0;
   const priority = hotspot.priority ?? 10;
-  const tickerLabel = asset.ticker ?? "Private Company";
+  const tickerLabel = asset.displayTicker ?? "Private Company";
   const showHighlight = hovered;
   const tooltipAbove = hotspot.y >= 42;
   const visualWidthPct = (hotspot.width / hitWidth) * 100;
@@ -45,7 +45,7 @@ export function BasketHotspot({
   return (
     <button
       type="button"
-      aria-label={`Inspect ${asset.name}${asset.ticker ? `, ${asset.ticker}` : ", private company"}`}
+      aria-label={`Inspect ${asset.name}${asset.displayTicker ? `, ${asset.displayTicker}` : ", private company"}`}
       aria-pressed={selected}
       tabIndex={disabled ? -1 : tabIndex}
       disabled={disabled}

@@ -49,6 +49,18 @@ export function SiteFooter() {
             financial advice. Holding $EGGS does not automatically constitute
             ownership of displayed securities.
           </p>
+          <p className="text-xs text-muted">
+            Market data provided by{" "}
+            <a
+              href="https://twelvedata.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline-offset-2 hover:text-lime hover:underline"
+            >
+              Twelve Data
+            </a>
+            . Quotes may be delayed and are not investment advice.
+          </p>
           <p className="text-xs text-muted">© {year} $EGGS. All rights reserved.</p>
         </div>
       </div>

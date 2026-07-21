@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { basketAssets } from "@/data/assets";
 import { AssetLogo } from "@/components/assets/AssetLogo";
-import { useMarketData } from "@/hooks/useMarketData";
+import { useMarketQuotes } from "@/hooks/useMarketQuotes";
 import { useAssetSelection } from "@/providers/AssetSelectionProvider";
+import { getDataStateLabel } from "@/lib/market-data/normalize";
+import { getDataStateDisplay } from "@/lib/market-data/labels";
 import { cn, formatPercent } from "@/lib/utils";
 
 export function AssetCard({
@@ -15,13 +17,11 @@ export function AssetCard({
   index: number;
 }) {
   const { selectAsset, selectedId } = useAssetSelection();
-  const { data } = useMarketData();
-  const quote =
-    asset.marketDataSymbol && data?.quotes
-      ? data.quotes[asset.marketDataSymbol]
-      : null;
+  const { quotesByAssetId, isDevelopmentMock } = useMarketQuotes();
+  const quote = quotesByAssetId[asset.id] ?? null;
   const positive = (quote?.changePercent ?? 0) >= 0;
   const selected = selectedId === asset.id;
+  const dataLabel = quote ? getDataStateDisplay(getDataStateLabel(quote)) : null;
 
   return (
     <motion.button
@@ -37,7 +37,7 @@ export function AssetCard({
           : "border-border hover:border-lime/40",
       )}
       onClick={() => selectAsset(asset.id, { scrollToInspector: true })}
-      aria-label={`${asset.name}${asset.ticker ? `, ${asset.ticker}` : ", private company"}`}
+      aria-label={`${asset.name}${asset.displayTicker ? `, ${asset.displayTicker}` : ", private company"}`}
       aria-pressed={selected}
     >
       <div className="egg-highlight pointer-events-none absolute inset-x-6 top-2 h-20" aria-hidden />
@@ -46,18 +46,26 @@ export function AssetCard({
           src={asset.logoPath}
           alt={asset.name}
           size={72}
-          fallbackText={asset.ticker ?? "SPX"}
+          fallbackText={asset.displayTicker ?? "SPX"}
           containerClassName="rounded-2xl"
         />
       </div>
       <h3 className="mt-3 text-base font-semibold leading-snug">{asset.name}</h3>
       <p className="mt-1 text-xs text-muted">
-        {asset.ticker ?? "Private Company"} ·{" "}
-        {asset.type === "index" ? "Index" : asset.isPrivate ? "Private" : asset.sector}
+        {asset.displayTicker ?? "Private Company"} ·{" "}
+        {asset.assetType === "index"
+          ? "Index"
+          : asset.isPrivate
+            ? "Private"
+            : asset.sector}
       </p>
       {asset.isPrivate ? (
         <p className="mt-2 text-[11px] uppercase tracking-[0.16em] text-muted">
-          Private Company
+          Private Company · No public market price
+        </p>
+      ) : quote?.unavailable ? (
+        <p className="mt-2 text-xs text-muted">
+          {quote.unavailableReason ?? "Unavailable"}
         </p>
       ) : quote ? (
         <p
@@ -67,7 +75,8 @@ export function AssetCard({
           )}
         >
           {formatPercent(quote.changePercent)}
-          {data?.source === "demo" ? " · Demo" : ""}
+          {dataLabel ? ` · ${dataLabel}` : ""}
+          {isDevelopmentMock ? " · Dev" : ""}
         </p>
       ) : (
         <p className="mt-2 text-xs text-muted">—</p>

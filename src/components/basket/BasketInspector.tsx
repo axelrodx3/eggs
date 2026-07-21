@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import { basketAssets, basketFocusOrder } from "@/data/assets";
-import { useMarketData } from "@/hooks/useMarketData";
+import { useMarketQuotes } from "@/hooks/useMarketQuotes";
 import { useAssetSelection } from "@/providers/AssetSelectionProvider";
 import { AssetInfoPanel } from "@/components/basket/AssetInfoPanel";
 import { BasketControls } from "@/components/basket/BasketControls";
@@ -36,7 +36,7 @@ function clampPan(x: number, y: number) {
 export function BasketInspector() {
   const searchParams = useSearchParams();
   const { selectedId, selectedAsset, selectAsset } = useAssetSelection();
-  const { data, loading } = useMarketData();
+  const { quotesByAssetId, loading, isDevelopmentMock } = useMarketQuotes();
   const [inspectMode, setInspectMode] = useState(true);
   const [panMode, setPanMode] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -53,14 +53,7 @@ export function BasketInspector() {
   const debugMode = isHotspotDebugEnabled(searchParams);
   const hotspotsEnabled = inspectMode && !panMode;
 
-  const quote =
-    selectedAsset.marketDataSymbol && data?.quotes
-      ? data.quotes[selectedAsset.marketDataSymbol]
-      : null;
-  const history =
-    selectedAsset.marketDataSymbol && data?.history
-      ? data.history[selectedAsset.marketDataSymbol] ?? []
-      : [];
+  const quote = quotesByAssetId[selectedAsset.id] ?? null;
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -267,9 +260,8 @@ export function BasketInspector() {
             <AssetInfoPanel
               asset={selectedAsset}
               quote={quote}
-              history={history}
               loading={loading}
-              isDemo={data?.source === "demo" || quote?.isDemo === true}
+              isDevelopmentMock={isDevelopmentMock}
               onClose={() =>
                 document
                   .getElementById("basket")
@@ -285,9 +277,8 @@ export function BasketInspector() {
           <AssetInfoPanel
             asset={selectedAsset}
             quote={quote}
-            history={history}
             loading={loading}
-            isDemo={data?.source === "demo" || quote?.isDemo === true}
+            isDevelopmentMock={isDevelopmentMock}
             mobile
             onClose={() => setMobilePanelOpen(false)}
           />

@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
-import { publicMarketAssets } from "@/data/assets";
-import { fetchMarketQuotes } from "@/lib/market-data/provider";
+import { getServerCacheTtlMs } from "@/lib/market-data/config";
+import { fetchMarketQuotesResponse } from "@/lib/market-data/provider";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
+/** @deprecated Use GET /api/market/quotes */
 export async function GET() {
-  const symbols = publicMarketAssets
-    .map((asset) => asset.marketDataSymbol)
-    .filter((symbol): symbol is string => Boolean(symbol));
-
-  const bundle = await fetchMarketQuotes(symbols);
-  return NextResponse.json(bundle, {
+  const payload = await fetchMarketQuotesResponse();
+  const ttl = getServerCacheTtlMs(payload.marketState);
+  return NextResponse.json(payload, {
     headers: {
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+      "Cache-Control": `public, s-maxage=${Math.floor(ttl / 1000)}, stale-while-revalidate=${Math.floor(ttl / 500)}`,
     },
   });
 }

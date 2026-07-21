@@ -4,6 +4,7 @@ import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { basketAssetByTicker, defaultSelectedAssetId } from "@/data/assets";
 import { AssetSelectionProvider } from "@/providers/AssetSelectionProvider";
+import { MarketQuotesProvider } from "@/providers/MarketQuotesProvider";
 import { SiteNavigation } from "@/components/navigation/SiteNavigation";
 import { HeroSection } from "@/components/hero/HeroSection";
 import { BasketInspector } from "@/components/basket/BasketInspector";
@@ -36,17 +37,19 @@ function HomePageInner() {
 
   return (
     <AssetSelectionProvider initialAssetId={initialAssetId}>
-      <SiteNavigation />
-      <main>
-        <HeroSection />
-        <BasketInspector />
-        <MarketTicker />
-        <AssetGrid />
-        <HowToBuySection />
-        <TokenomicsSection />
-        <FaqSection />
-      </main>
-      <SiteFooter />
+      <MarketQuotesProvider>
+        <SiteNavigation />
+        <main>
+          <HeroSection />
+          <BasketInspector />
+          <MarketTicker />
+          <AssetGrid />
+          <HowToBuySection />
+          <TokenomicsSection />
+          <FaqSection />
+        </main>
+        <SiteFooter />
+      </MarketQuotesProvider>
     </AssetSelectionProvider>
   );
 }

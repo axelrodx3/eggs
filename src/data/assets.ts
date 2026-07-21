@@ -6,7 +6,13 @@ export const BASKET_IMAGE = {
   aspectRatio: "3 / 2",
 } as const;
 
-export type AssetType = "stock" | "index" | "private";
+export type AssetType = "equity" | "index" | "private";
+
+export type ProviderSymbols = {
+  twelveData?: string;
+  massive?: string;
+  finnhub?: string;
+};
 
 export type AssetHotspot = {
   /** Center X (% of basket stage). */
@@ -30,27 +36,34 @@ export type AssetHotspot = {
 export type BasketAsset = {
   id: string;
   name: string;
-  ticker: string | null;
-  type: AssetType;
+  displayTicker: string | null;
+  providerSymbols: ProviderSymbols;
+  assetType: AssetType;
+  exchange?: string;
   description: string;
   sector: string;
   officialUrl: string;
   logoPath: string;
   hotspot: AssetHotspot;
-  marketDataSymbol: string | null;
   isPrivate: boolean;
 };
 
 /**
  * Hotspots manually calibrated for public/assets/eggs-basket.png (1536×1024).
  * x/y = egg center; width/height = visual highlight; hitWidth/hitHeight = tap target.
+ *
+ * Twelve Data provider symbols verified via /symbol_search during integration:
+ * - Equities use standard U.S. tickers.
+ * - SPX / NDX are index symbols (availability depends on plan tier).
  */
 export const basketAssets: BasketAsset[] = [
   {
     id: "aapl",
     name: "Apple",
-    ticker: "AAPL",
-    type: "stock",
+    displayTicker: "AAPL",
+    providerSymbols: { twelveData: "AAPL", finnhub: "AAPL" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Consumer technology leader known for iPhone, services, and a global hardware ecosystem.",
     sector: "Technology",
@@ -66,14 +79,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: -10,
       priority: 12,
     },
-    marketDataSymbol: "AAPL",
     isPrivate: false,
   },
   {
     id: "googl",
     name: "Alphabet",
-    ticker: "GOOGL",
-    type: "stock",
+    displayTicker: "GOOGL",
+    providerSymbols: { twelveData: "GOOGL", finnhub: "GOOGL" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Parent of Google, spanning search, cloud, AI, and digital advertising at global scale.",
     sector: "Technology",
@@ -89,14 +103,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: -4,
       priority: 12,
     },
-    marketDataSymbol: "GOOGL",
     isPrivate: false,
   },
   {
     id: "nvda",
     name: "NVIDIA",
-    ticker: "NVDA",
-    type: "stock",
+    displayTicker: "NVDA",
+    providerSymbols: { twelveData: "NVDA", finnhub: "NVDA" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Semiconductor and AI infrastructure company powering data centers, gaming, and accelerated computing.",
     sector: "Technology",
@@ -112,14 +127,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: 0,
       priority: 13,
     },
-    marketDataSymbol: "NVDA",
     isPrivate: false,
   },
   {
     id: "msft",
     name: "Microsoft",
-    ticker: "MSFT",
-    type: "stock",
+    displayTicker: "MSFT",
+    providerSymbols: { twelveData: "MSFT", finnhub: "MSFT" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Enterprise software, cloud, productivity, and AI platform company behind Azure and Office.",
     sector: "Technology",
@@ -135,14 +151,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: 4,
       priority: 12,
     },
-    marketDataSymbol: "MSFT",
     isPrivate: false,
   },
   {
     id: "amzn",
     name: "Amazon",
-    ticker: "AMZN",
-    type: "stock",
+    displayTicker: "AMZN",
+    providerSymbols: { twelveData: "AMZN", finnhub: "AMZN" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "E-commerce, logistics, and cloud computing giant through AWS and consumer marketplaces.",
     sector: "Consumer / Cloud",
@@ -158,14 +175,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: 10,
       priority: 12,
     },
-    marketDataSymbol: "AMZN",
     isPrivate: false,
   },
   {
     id: "meta",
     name: "Meta",
-    ticker: "META",
-    type: "stock",
+    displayTicker: "META",
+    providerSymbols: { twelveData: "META", finnhub: "META" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Social and metaverse technology company operating Facebook, Instagram, and WhatsApp.",
     sector: "Technology",
@@ -181,14 +199,15 @@ export const basketAssets: BasketAsset[] = [
       rotation: -10,
       priority: 22,
     },
-    marketDataSymbol: "META",
     isPrivate: false,
   },
   {
     id: "tsla",
     name: "Tesla",
-    ticker: "TSLA",
-    type: "stock",
+    displayTicker: "TSLA",
+    providerSymbols: { twelveData: "TSLA", finnhub: "TSLA" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
       "Electric vehicle and energy company focused on manufacturing, batteries, and autonomy.",
     sector: "Automotive / Energy",
@@ -204,14 +223,14 @@ export const basketAssets: BasketAsset[] = [
       rotation: -4,
       priority: 22,
     },
-    marketDataSymbol: "TSLA",
     isPrivate: false,
   },
   {
     id: "sp500",
     name: "S&P 500 Index",
-    ticker: "SPX",
-    type: "index",
+    displayTicker: "SPX",
+    providerSymbols: { twelveData: "SPX" },
+    assetType: "index",
     description:
       "Broad U.S. large-cap benchmark tracking roughly 500 leading domestic companies.",
     sector: "Index",
@@ -227,14 +246,14 @@ export const basketAssets: BasketAsset[] = [
       rotation: 0,
       priority: 25,
     },
-    marketDataSymbol: "SPX",
     isPrivate: false,
   },
   {
     id: "ndx",
     name: "Nasdaq-100 Index",
-    ticker: "NDX",
-    type: "index",
+    displayTicker: "NDX",
+    providerSymbols: { twelveData: "NDX" },
+    assetType: "index",
     description:
       "Large-cap growth index weighted toward technology and innovation leaders listed on Nasdaq.",
     sector: "Index",
@@ -250,14 +269,14 @@ export const basketAssets: BasketAsset[] = [
       rotation: 4,
       priority: 22,
     },
-    marketDataSymbol: "NDX",
     isPrivate: false,
   },
   {
     id: "spacex",
     name: "SpaceX",
-    ticker: null,
-    type: "private",
+    displayTicker: null,
+    providerSymbols: {},
+    assetType: "private",
     description:
       "Private aerospace company developing launch vehicles, Starlink, and next-generation space systems. Included as a thematic representation—not a tradable public equity.",
     sector: "Private Company",
@@ -273,7 +292,6 @@ export const basketAssets: BasketAsset[] = [
       rotation: 10,
       priority: 22,
     },
-    marketDataSymbol: null,
     isPrivate: true,
   },
 ];
@@ -284,13 +302,27 @@ export const basketAssetById = Object.fromEntries(
 
 export const basketAssetByTicker = Object.fromEntries(
   basketAssets
-    .filter((asset) => asset.ticker)
-    .map((asset) => [asset.ticker!, asset]),
+    .filter((asset) => asset.displayTicker)
+    .map((asset) => [asset.displayTicker!, asset]),
 ) as Record<string, BasketAsset>;
 
 export const publicMarketAssets = basketAssets.filter(
-  (asset) => !asset.isPrivate && asset.marketDataSymbol,
+  (asset) => !asset.isPrivate && asset.assetType !== "private",
 );
+
+export const publicMarketAssetIds = publicMarketAssets.map((asset) => asset.id);
+
+export function getProviderSymbol(
+  asset: BasketAsset,
+  provider: "twelveData" | "massive" | "finnhub" | "twelve-data" | "massive" | "finnhub",
+): string | null {
+  if (asset.isPrivate) return null;
+  const key =
+    provider === "twelve-data" || provider === "twelveData"
+      ? "twelveData"
+      : provider;
+  return asset.providerSymbols[key as keyof ProviderSymbols] ?? null;
+}
 
 export const defaultSelectedAssetId = basketAssets[0]?.id ?? "aapl";
 

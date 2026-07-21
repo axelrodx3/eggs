@@ -2,21 +2,34 @@
 
 import { basketAssets } from "@/data/assets";
 import { AssetLogo } from "@/components/assets/AssetLogo";
-import { useMarketData } from "@/hooks/useMarketData";
+import { useMarketQuotes } from "@/hooks/useMarketQuotes";
 import { useAssetSelection } from "@/providers/AssetSelectionProvider";
+import { getDataStateLabel } from "@/lib/market-data/normalize";
+import {
+  buildStripUpdatedLabel,
+  getDataStateDisplay,
+} from "@/lib/market-data/labels";
 import { cn, formatPercent, formatPrice } from "@/lib/utils";
 
 export function MarketTicker() {
-  const { data, loading } = useMarketData();
+  const {
+    quotesByAssetId,
+    loading,
+    lastUpdated,
+    isStale,
+    isDevelopmentMock,
+    status,
+  } = useMarketQuotes();
   const { selectAsset, selectedId } = useAssetSelection();
 
   const publicItems = basketAssets.filter((asset) => !asset.isPrivate);
+  const updatedLabel = buildStripUpdatedLabel(lastUpdated, isStale);
 
   const renderItem = (asset: (typeof basketAssets)[number], keySuffix = "") => {
-    const symbol = asset.marketDataSymbol;
-    const quote = symbol && data?.quotes ? data.quotes[symbol] : null;
+    const quote = quotesByAssetId[asset.id] ?? null;
     const positive = (quote?.changePercent ?? 0) >= 0;
     const selected = selectedId === asset.id;
+    const dataLabel = quote ? getDataStateDisplay(getDataStateLabel(quote)) : null;
 
     return (
       <button
@@ -34,22 +47,26 @@ export function MarketTicker() {
           src={asset.logoPath}
           alt={asset.name}
           size={32}
-          fallbackText={asset.ticker ?? "SPX"}
+          fallbackText={asset.displayTicker ?? "SPX"}
           containerClassName="rounded-lg"
         />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold">{asset.ticker}</span>
-            {data?.source === "demo" ? (
-              <span className="rounded bg-lime/10 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-lime">
-                Demo
+            <span className="text-sm font-semibold">{asset.displayTicker}</span>
+            {dataLabel ? (
+              <span className="rounded bg-black/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted">
+                {dataLabel}
               </span>
             ) : null}
           </div>
-          {quote ? (
+          {quote?.unavailable ? (
+            <span className="text-xs text-muted">
+              {quote.unavailableReason ?? "Unavailable"}
+            </span>
+          ) : quote?.price !== null && quote?.price !== undefined ? (
             <div className="mt-0.5 flex items-center gap-1.5 text-xs">
               <span className="text-foreground/85">
-                {formatPrice(quote.price, quote.currency)}
+                {formatPrice(quote.price, quote.currency, quote.assetType)}
               </span>
               <span className={positive ? "text-lime" : "text-danger"}>
                 {formatPercent(quote.changePercent)}
@@ -57,7 +74,7 @@ export function MarketTicker() {
             </div>
           ) : (
             <span className="text-xs text-muted">
-              {loading ? "Loading…" : "—"}
+              {loading ? "Loading…" : status === "setup_required" ? "Setup required" : "—"}
             </span>
           )}
         </div>
@@ -69,16 +86,19 @@ export function MarketTicker() {
 
   return (
     <section id="market" className="scroll-mt-24 border-y border-border py-8 sm:py-10">
-      <div className="section-shell mb-3 flex items-end justify-between gap-4">
+      <div className="section-shell mb-3 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="section-kicker">Live market watch</p>
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Market Strip
           </h2>
+          {updatedLabel ? (
+            <p className="mt-1 text-[11px] text-muted">{updatedLabel}</p>
+          ) : null}
         </div>
-        {data?.source === "demo" ? (
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-            Demo data in development
+        {isDevelopmentMock ? (
+          <p className="text-[11px] uppercase tracking-[0.14em] text-lime">
+            Development mock data
           </p>
         ) : null}
       </div>

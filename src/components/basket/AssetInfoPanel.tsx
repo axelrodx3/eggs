@@ -1,25 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import type { BasketAsset } from "@/data/assets";
-import type { QuoteChange } from "@/lib/market-data/types";
+import type { MarketQuote } from "@/lib/market-data/types";
+import type { ChartRange } from "@/lib/market-data/config";
+import { CHART_RANGE_ALLOWLIST } from "@/lib/market-data/config";
 import { AssetLogo } from "@/components/assets/AssetLogo";
 import { MiniChart } from "@/components/market/MiniChart";
+import { useMarketHistory } from "@/hooks/useMarketQuotes";
+import { getDataStateLabel } from "@/lib/market-data/normalize";
+import {
+  buildUpdatedLabel,
+  getDataStateDisplay,
+} from "@/lib/market-data/labels";
 import {
   cn,
   formatChange,
   formatMarketCap,
   formatPercent,
   formatPrice,
+  formatVolume,
 } from "@/lib/utils";
 
 type AssetInfoPanelProps = {
   asset: BasketAsset;
-  quote: QuoteChange | null;
-  history: { date: string; value: number }[];
+  quote: MarketQuote | null;
   loading: boolean;
-  isDemo: boolean;
+  isDevelopmentMock: boolean;
   onClose?: () => void;
   mobile?: boolean;
 };
@@ -27,18 +36,24 @@ type AssetInfoPanelProps = {
 export function AssetInfoPanel({
   asset,
   quote,
-  history,
   loading,
-  isDemo,
+  isDevelopmentMock,
   onClose,
   mobile = false,
 }: AssetInfoPanelProps) {
+  const [range, setRange] = useState<ChartRange>("1M");
   const positive = (quote?.change ?? 0) >= 0;
   const typeLabel = asset.isPrivate
     ? "Private Company"
-    : asset.type === "index"
+    : asset.assetType === "index"
       ? "Index"
       : asset.sector;
+
+  const { chartPoints, loading: historyLoading, periodChangePercent } =
+    useMarketHistory(asset.isPrivate ? null : asset.id, range, !asset.isPrivate);
+
+  const dataLabel = quote ? getDataStateDisplay(getDataStateLabel(quote)) : null;
+  const updatedLabel = buildUpdatedLabel(quote, quote?.providerTimestamp ?? null, quote?.isStale ?? false);
 
   return (
     <AnimatePresence mode="wait">
@@ -71,7 +86,7 @@ export function AssetInfoPanel({
             src={asset.logoPath}
             alt={asset.name}
             size={64}
-            fallbackText={asset.ticker ?? "SPX"}
+            fallbackText={asset.displayTicker ?? "SPX"}
             containerClassName="rounded-2xl"
           />
         </div>
@@ -82,7 +97,9 @@ export function AssetInfoPanel({
           </p>
           <h3 className="text-2xl font-semibold leading-tight">{asset.name}</h3>
           <p className="text-sm text-muted">
-            {asset.ticker ?? "Private Company"}
+            {asset.isPrivate
+              ? "Private Company · No public ticker"
+              : asset.displayTicker}
           </p>
         </div>
 
@@ -107,9 +124,9 @@ export function AssetInfoPanel({
           </div>
         ) : (
           <div className="mt-5 space-y-4">
-            {isDemo ? (
+            {isDevelopmentMock ? (
               <p className="inline-flex rounded-full border border-lime/30 bg-lime/10 px-3 py-1 text-xs font-medium text-lime">
-                Demo data
+                Development mock data
               </p>
             ) : null}
 
@@ -118,12 +135,23 @@ export function AssetInfoPanel({
                 <div className="h-8 w-32 animate-pulse rounded bg-surface" />
                 <div className="h-4 w-24 animate-pulse rounded bg-surface" />
               </div>
-            ) : quote ? (
+            ) : quote?.unavailable ? (
+              <p className="rounded-xl border border-border bg-black/30 p-4 text-sm text-muted">
+                {quote.unavailableReason ?? "Market data unavailable."}
+              </p>
+            ) : quote?.price !== null && quote?.price !== undefined ? (
               <>
                 <div>
-                  <p className="text-3xl font-semibold tracking-tight">
-                    {formatPrice(quote.price, quote.currency)}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-3xl font-semibold tracking-tight">
+                      {formatPrice(quote.price, quote.currency, quote.assetType)}
+                    </p>
+                    {dataLabel ? (
+                      <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+                        {dataLabel}
+                      </span>
+                    ) : null}
+                  </div>
                   <p
                     className={cn(
                       "mt-1 text-sm font-medium",
@@ -133,20 +161,24 @@ export function AssetInfoPanel({
                     {formatChange(quote.change)} (
                     {formatPercent(quote.changePercent)})
                   </p>
+                  {updatedLabel ? (
+                    <p className="mt-1 text-[11px] text-muted">{updatedLabel}</p>
+                  ) : null}
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="rounded-xl border border-border/80 bg-black/20 px-3 py-2.5">
-                    <dt className="text-xs text-muted">
-                      {asset.type === "index" ? "Type" : "Sector"}
-                    </dt>
-                    <dd className="font-medium">{typeLabel}</dd>
-                  </div>
-                  <div className="rounded-xl border border-border/80 bg-black/20 px-3 py-2.5">
-                    <dt className="text-xs text-muted">Market cap</dt>
-                    <dd className="font-medium">
-                      {formatMarketCap(quote.marketCap)}
-                    </dd>
-                  </div>
+                  <Stat label="Open" value={formatPrice(quote.open, quote.currency, quote.assetType)} />
+                  <Stat label="Previous close" value={formatPrice(quote.previousClose, quote.currency, quote.assetType)} />
+                  <Stat label="Day high" value={formatPrice(quote.high, quote.currency, quote.assetType)} />
+                  <Stat label="Day low" value={formatPrice(quote.low, quote.currency, quote.assetType)} />
+                  <Stat label="Volume" value={formatVolume(quote.volume)} />
+                  {asset.assetType === "equity" ? (
+                    <Stat label="Market cap" value={formatMarketCap(quote.marketCap)} />
+                  ) : (
+                    <Stat label="Type" value="Index" />
+                  )}
+                  {quote.exchange ? (
+                    <Stat label="Exchange" value={quote.exchange} />
+                  ) : null}
                 </dl>
               </>
             ) : (
@@ -157,8 +189,34 @@ export function AssetInfoPanel({
               {asset.description}
             </p>
 
-            {!loading && quote ? (
-              <MiniChart data={history} positive={positive} />
+            {!asset.isPrivate ? (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {CHART_RANGE_ALLOWLIST.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={cn(
+                        "focus-ring rounded-full border px-3 py-1 text-xs transition",
+                        range === item
+                          ? "border-lime/50 bg-lime/10 text-lime"
+                          : "border-border text-muted hover:border-lime/30",
+                      )}
+                      onClick={() => setRange(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+                <MiniChart
+                  data={chartPoints}
+                  loading={historyLoading}
+                  positive={(periodChangePercent ?? quote?.changePercent ?? 0) >= 0}
+                  assetTicker={asset.displayTicker ?? asset.id.toUpperCase()}
+                  periodChangePercent={periodChangePercent}
+                  range={range}
+                />
+              </>
             ) : null}
 
             <a
@@ -197,5 +255,14 @@ export function AssetInfoPanel({
         )}
       </motion.aside>
     </AnimatePresence>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-border/80 bg-black/20 px-3 py-2.5">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="font-medium">{value}</dd>
+    </div>
   );
 }

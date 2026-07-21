@@ -43,7 +43,7 @@ export function AssetSelectionProvider({
 
       if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
-        params.set("asset", basketAssetById[id].ticker ?? id.toUpperCase());
+        params.set("asset", basketAssetById[id].displayTicker ?? id.toUpperCase());
         const next = `${window.location.pathname}?${params.toString()}`;
         window.history.replaceState(null, "", next);
       }

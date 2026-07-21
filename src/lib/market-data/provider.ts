@@ -1,43 +1,123 @@
-import { mockMarketProvider } from "./mock-provider";
-import type { MarketDataProvider, QuoteBundle } from "./types";
+import "server-only";
 
-function resolveProvider(): MarketDataProvider {
-  const provider = process.env.MARKET_DATA_PROVIDER ?? "mock";
+import { mockMarketProvider } from "./mock-provider";
+import { twelveDataProvider } from "./twelve-data-provider";
+import type { MarketDataProviderInterface } from "./types";
+import { MarketDataError } from "./errors";
+
+export function resolveMarketDataProvider(): MarketDataProviderInterface {
+  const provider =
+    process.env.MARKET_DATA_PROVIDER ??
+    (process.env.NODE_ENV === "production" ? "twelve-data" : "mock");
 
   switch (provider) {
+    case "twelve-data":
+      return twelveDataProvider;
     case "mock":
-    default:
       return mockMarketProvider;
+    default:
+      return twelveDataProvider;
   }
 }
 
-export async function fetchMarketQuotes(
-  symbols: string[],
-): Promise<QuoteBundle> {
-  const unique = [...new Set(symbols.filter(Boolean))];
-  if (unique.length === 0) {
+export async function fetchMarketQuotesResponse() {
+  const provider = resolveMarketDataProvider();
+
+  if (provider.name === "twelve-data" && !process.env.TWELVE_DATA_API_KEY?.trim()) {
+    if (process.env.NODE_ENV === "production") {
+      return {
+        quotesByAssetId: {},
+        status: "error" as const,
+        provider: null,
+        marketState: "unknown" as const,
+        lastUpdated: null,
+        fetchedAt: new Date().toISOString(),
+        isStale: false,
+        error: "Market data unavailable.",
+        errorCode: "missing_api_key",
+        isDevelopmentMock: false,
+      };
+    }
+
     return {
-      quotes: {},
-      history: {},
-      source: "demo",
-      stale: false,
-      error: null,
+      quotesByAssetId: {},
+      status: "setup_required" as const,
+      provider: null,
+      marketState: "unknown" as const,
+      lastUpdated: null,
+      fetchedAt: new Date().toISOString(),
+      isStale: false,
+      error: "Configure TWELVE_DATA_API_KEY in .env.local for live quotes.",
+      errorCode: "missing_api_key",
+      isDevelopmentMock: false,
     };
   }
 
   try {
-    const provider = resolveProvider();
-    return await provider.fetchQuotes(unique);
+    return await provider.fetchQuotes([]);
   } catch (error) {
+    if (error instanceof MarketDataError && error.code === "missing_api_key") {
+      if (process.env.NODE_ENV === "production") {
+        console.error("[market-data] API key not configured.");
+      } else {
+        console.warn("[market-data] TWELVE_DATA_API_KEY not configured.");
+      }
+      return {
+        quotesByAssetId: {},
+        status: process.env.NODE_ENV === "production" ? ("error" as const) : ("setup_required" as const),
+        provider: null,
+        marketState: "unknown" as const,
+        lastUpdated: null,
+        fetchedAt: new Date().toISOString(),
+        isStale: false,
+        error:
+          process.env.NODE_ENV === "production"
+            ? "Market data unavailable."
+            : "Configure TWELVE_DATA_API_KEY in .env.local.",
+        errorCode: "missing_api_key",
+        isDevelopmentMock: false,
+      };
+    }
+
+    console.error(
+      "[market-data] Quote fetch failed:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+
     return {
-      quotes: {},
-      history: {},
-      source: "demo",
-      stale: true,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unable to load market data.",
+      quotesByAssetId: {},
+      status: "error" as const,
+      provider: provider.name,
+      marketState: "unknown" as const,
+      lastUpdated: null,
+      fetchedAt: new Date().toISOString(),
+      isStale: false,
+      error: "Market data temporarily unavailable.",
+      errorCode:
+        error instanceof MarketDataError ? error.code : "provider_unavailable",
+      isDevelopmentMock: false,
     };
   }
+}
+
+export async function fetchMarketHistoryResponse(assetId: string, range: string) {
+  const provider = resolveMarketDataProvider();
+
+  if (provider.name === "twelve-data" && !process.env.TWELVE_DATA_API_KEY?.trim()) {
+    return {
+      assetId,
+      range,
+      candles: [],
+      status: "unavailable" as const,
+      error:
+        process.env.NODE_ENV === "production"
+          ? "Market data unavailable."
+          : "Configure TWELVE_DATA_API_KEY in .env.local.",
+      errorCode: "missing_api_key",
+      fetchedAt: new Date().toISOString(),
+      periodChangePercent: null,
+    };
+  }
+
+  return provider.fetchHistory(assetId, range);
 }
