@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import type { BasketAsset } from "@/data/assets";
+import { getRobinhoodStockUrl } from "@/data/assets";
 import type { MarketQuote } from "@/lib/market-data/types";
 import type { ChartRange } from "@/lib/market-data/config";
 import { CHART_RANGE_ALLOWLIST } from "@/lib/market-data/config";
@@ -54,6 +55,7 @@ export function AssetInfoPanel({
 
   const dataLabel = quote ? getDataStateDisplay(getDataStateLabel(quote)) : null;
   const updatedLabel = buildUpdatedLabel(quote, quote?.providerTimestamp ?? null, quote?.isStale ?? false);
+  const robinhoodUrl = getRobinhoodStockUrl(asset);
 
   return (
     <AnimatePresence mode="wait">
@@ -220,15 +222,17 @@ export function AssetInfoPanel({
               </>
             ) : null}
 
-            <a
-              href={asset.officialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="focus-ring inline-flex items-center gap-2 text-sm text-lime"
-            >
-              External information
-              <ExternalLink className="h-4 w-4" />
-            </a>
+            {robinhoodUrl ? (
+              <a
+                href={robinhoodUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring inline-flex items-center gap-2 text-sm text-lime"
+              >
+                View on Robinhood
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            ) : null}
           </div>
         )}
 

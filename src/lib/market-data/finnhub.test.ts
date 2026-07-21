@@ -219,6 +219,29 @@ describe("historical candles", () => {
   });
 });
 
+describe("Robinhood stock URLs", () => {
+  it("maps equities to Robinhood stock pages", async () => {
+    const { basketAssetById, getRobinhoodStockUrl } = await import("@/data/assets");
+    expect(getRobinhoodStockUrl(basketAssetById.aapl)).toBe(
+      "https://robinhood.com/stocks/AAPL/",
+    );
+    expect(getRobinhoodStockUrl(basketAssetById.googl)).toBe(
+      "https://robinhood.com/stocks/GOOGL/",
+    );
+  });
+
+  it("maps index eggs to tradable Robinhood ETF pages", async () => {
+    const { basketAssetById, getRobinhoodStockUrl } = await import("@/data/assets");
+    expect(getRobinhoodStockUrl(basketAssetById.sp500)).toBe(
+      "https://robinhood.com/stocks/SPY/",
+    );
+    expect(getRobinhoodStockUrl(basketAssetById.ndx)).toBe(
+      "https://robinhood.com/stocks/QQQ/",
+    );
+    expect(getRobinhoodStockUrl(basketAssetById.spacex)).toBeNull();
+  });
+});
+
 describe("safe rendering inputs", () => {
   it("parseProviderNumber rejects empty values", () => {
     expect(parseProviderNumber("")).toBeNull();

@@ -320,5 +320,20 @@ export function getProviderSymbol(
 
 export const defaultSelectedAssetId = "aapl";
 
+/** Robinhood tradable symbols when display tickers are not listed (e.g. SPX → SPY). */
+const ROBINHOOD_SYMBOL_BY_ASSET_ID: Record<string, string> = {
+  sp500: "SPY",
+  ndx: "QQQ",
+};
+
+/** Public Robinhood stock/ETF page for basket assets with a tradable symbol. */
+export function getRobinhoodStockUrl(asset: BasketAsset): string | null {
+  if (asset.isPrivate) return null;
+  const symbol =
+    ROBINHOOD_SYMBOL_BY_ASSET_ID[asset.id] ?? asset.displayTicker;
+  if (!symbol) return null;
+  return `https://robinhood.com/stocks/${symbol}/`;
+}
+
 /** Visual order for keyboard focus through basket eggs. */
 export const basketFocusOrder = basketAssets.map((asset) => asset.id);
