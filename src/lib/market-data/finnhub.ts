@@ -36,6 +36,7 @@ import type {
   MarketQuotesResponse,
 } from "./types";
 import { getServerCacheTtlMs } from "./config";
+import { buildSyntheticCandlesFromQuote } from "./synthetic-history";
 
 const FINNHUB_BASE = "https://finnhub.io/api/v1";
 
@@ -138,6 +139,97 @@ async function fetchJson<T>(url: string, label: string): Promise<T> {
   throw new MarketDataError("timeout", `${label} timed out.`, {
     cause: lastError,
   });
+}
+
+type FinnhubCandlePayload = z.infer<typeof finnhubCandleSchema>;
+
+async function fetchFinnhubCandles(
+  providerSymbol: string,
+  range: ChartRange,
+): Promise<FinnhubCandlePayload | null> {
+  const { resolution, lookbackSeconds } = FINNHUB_CHART_RANGE_CONFIG[range];
+  const to = Math.floor(Date.now() / 1000);
+  const from = to - lookbackSeconds;
+  const url = buildUrl("/stock/candle", {
+    symbol: providerSymbol,
+    resolution,
+    from: String(from),
+    to: String(to),
+  });
+
+  try {
+    const response = await fetchWithTimeout(url);
+    if (response.status === 403 || response.status === 401) {
+      return null;
+    }
+    if (response.status === 429) {
+      throw new MarketDataError("rate_limit", "Rate limit reached.", {
+        retryAfterMs: 60_000,
+      });
+    }
+    if (!response.ok) {
+      return null;
+    }
+    const json = await response.json();
+    const parsed = finnhubCandleSchema.safeParse(json);
+    if (!parsed.success || parsed.data.s !== "ok") {
+      return null;
+    }
+    return parsed.data;
+  } catch (error) {
+    if (error instanceof MarketDataError && error.code === "rate_limit") {
+      throw error;
+    }
+    return null;
+  }
+}
+
+async function getQuoteForHistoryFallback(
+  assetId: string,
+  providerSymbol: string,
+  displaySymbol: string,
+  assetName: string,
+  assetType: "equity" | "index",
+): Promise<MarketQuote | null> {
+  const staleQuotes = getStaleCached<MarketQuotesResponse>("quotes:finnhub");
+  const cached = staleQuotes?.value.quotesByAssetId[assetId];
+  if (cached?.price && !cached.unavailable) {
+    return cached;
+  }
+
+  const fetchedAt = new Date().toISOString();
+  const quote = await fetchSingleQuote(
+    assetId,
+    providerSymbol,
+    displaySymbol,
+    assetName,
+    assetType,
+    fetchedAt,
+  );
+  if (quote.unavailable || quote.price === null) {
+    return null;
+  }
+  return quote;
+}
+
+function buildSyntheticHistoryResponse(
+  assetId: string,
+  range: ChartRange,
+  quote: MarketQuote,
+  fetchedAt: string,
+): MarketHistoryResponse {
+  const candles = buildSyntheticCandlesFromQuote(quote, range);
+  return {
+    assetId,
+    range,
+    candles,
+    status: candles.length > 0 ? "ok" : "unavailable",
+    error: candles.length > 0 ? null : "Chart unavailable.",
+    errorCode: candles.length > 0 ? null : "historical_unavailable",
+    fetchedAt,
+    periodChangePercent: computePeriodChangePercent(candles),
+    isSyntheticHistory: candles.length > 0,
+  };
 }
 
 async function fetchSingleQuote(
@@ -299,21 +391,27 @@ async function fetchHistoryForAsset(
   const cached = getCached<MarketHistoryResponse>(cacheKey);
   if (cached) return cached;
 
-  const { resolution, lookbackSeconds } = FINNHUB_CHART_RANGE_CONFIG[range];
-  const to = Math.floor(Date.now() / 1000);
-  const from = to - lookbackSeconds;
-
   try {
-    const url = buildUrl("/stock/candle", {
-      symbol: providerSymbol,
-      resolution,
-      from: String(from),
-      to: String(to),
-    });
-    const json = await fetchJson<unknown>(url, `Candles ${providerSymbol}`);
-    const parsed = finnhubCandleSchema.safeParse(json);
+    const candlePayload = await fetchFinnhubCandles(providerSymbol, range);
 
-    if (!parsed.success || parsed.data.s !== "ok") {
+    if (!candlePayload) {
+      const quote = await getQuoteForHistoryFallback(
+        asset.id,
+        providerSymbol,
+        asset.displayTicker ?? providerSymbol,
+        asset.name,
+        asset.assetType === "index" ? "index" : "equity",
+      );
+      if (quote && asset.assetType === "equity") {
+        const response = buildSyntheticHistoryResponse(
+          assetId,
+          range,
+          quote,
+          fetchedAt,
+        );
+        return setCached(cacheKey, response, MARKET_REFRESH_CONFIG.historyCacheMs);
+      }
+
       const response: MarketHistoryResponse = {
         assetId,
         range,
@@ -322,7 +420,7 @@ async function fetchHistoryForAsset(
         error:
           asset.assetType === "index"
             ? "Unavailable"
-            : "Historical data unavailable.",
+            : "Chart unavailable.",
         errorCode: "historical_unavailable",
         fetchedAt,
         periodChangePercent: null,
@@ -330,7 +428,7 @@ async function fetchHistoryForAsset(
       return setCached(cacheKey, response, MARKET_REFRESH_CONFIG.historyCacheMs);
     }
 
-    const { c = [], t = [], o = [], h = [], l = [], v = [] } = parsed.data;
+    const { c = [], t = [], o = [], h = [], l = [], v = [] } = candlePayload;
     const candles: MarketCandle[] = c
       .map((close, i) => ({
         timestamp: new Date((t[i] ?? 0) * 1000).toISOString(),
@@ -347,25 +445,41 @@ async function fetchHistoryForAsset(
       range,
       candles,
       status: candles.length > 0 ? "ok" : "unavailable",
-      error: candles.length > 0 ? null : "No historical candles returned.",
+      error: candles.length > 0 ? null : "Chart unavailable.",
       errorCode: candles.length > 0 ? null : "historical_unavailable",
       fetchedAt,
       periodChangePercent: computePeriodChangePercent(candles),
+      isSyntheticHistory: false,
     };
     return setCached(cacheKey, response, MARKET_REFRESH_CONFIG.historyCacheMs);
   } catch (error) {
-    const message =
-      error instanceof MarketDataError
-        ? error.message
-        : "Historical data unavailable.";
+    if (error instanceof MarketDataError && error.code === "rate_limit") {
+      throw error;
+    }
+    const quote = await getQuoteForHistoryFallback(
+      asset.id,
+      providerSymbol,
+      asset.displayTicker ?? providerSymbol,
+      asset.name,
+      asset.assetType === "index" ? "index" : "equity",
+    );
+    if (quote && asset.assetType === "equity") {
+      const response = buildSyntheticHistoryResponse(
+        assetId,
+        range,
+        quote,
+        fetchedAt,
+      );
+      return setCached(cacheKey, response, MARKET_REFRESH_CONFIG.historyCacheMs);
+    }
+
     return {
       assetId,
       range,
       candles: [],
       status: "error",
-      error: message,
-      errorCode:
-        error instanceof MarketDataError ? error.code : "historical_unavailable",
+      error: "Chart unavailable.",
+      errorCode: "historical_unavailable",
       fetchedAt,
       periodChangePercent: null,
     };

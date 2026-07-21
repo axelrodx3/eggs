@@ -18,6 +18,7 @@ export function MiniChart({
   assetTicker = "",
   periodChangePercent = null,
   range = "1M",
+  synthetic = false,
 }: {
   data: HistoricalPoint[];
   positive: boolean;
@@ -25,6 +26,7 @@ export function MiniChart({
   assetTicker?: string;
   periodChangePercent?: number | null;
   range?: string;
+  synthetic?: boolean;
 }) {
   if (loading) {
     return (
@@ -89,6 +91,11 @@ export function MiniChart({
       {summary ? (
         <p className="text-xs text-muted" aria-hidden="true">
           {summary}
+        </p>
+      ) : null}
+      {synthetic ? (
+        <p className="text-[11px] text-muted">
+          Approximate trend from live quote (not full historical data).
         </p>
       ) : null}
     </div>

@@ -50,6 +50,8 @@ Internal Next.js routes:
 
 **Index note:** Finnhub’s free retail API may not return live index quotes for ^GSPC / ^NDX. If unavailable, the UI shows **“Unavailable”** — we do **not** substitute ETF proxies as index pricing.
 
+**Chart note:** Finnhub’s free tier does not include `/stock/candle` historical data. For equities with live quotes, the inspector chart uses an **approximate trend** anchored to the current price (previous close → live quote). Indexes show no chart when data is unavailable.
+
 ## Caching
 
 Configured in `src/lib/market-data/config.ts`:

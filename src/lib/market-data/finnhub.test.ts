@@ -207,6 +207,16 @@ describe("historical candles", () => {
     const pct = computePeriodChangePercent([{ close: 100 }, { close: 101 }]);
     expect(pct).toBe(1);
   });
+
+  it("builds synthetic candles from a live quote", async () => {
+    const { buildSyntheticCandlesFromQuote } = await import("./synthetic-history");
+    const candles = buildSyntheticCandlesFromQuote(
+      baseQuote({ price: 200, previousClose: 190, high: 205, low: 188 }),
+      "1M",
+    );
+    expect(candles.length).toBeGreaterThan(1);
+    expect(candles.at(-1)?.close).toBe(200);
+  });
 });
 
 describe("safe rendering inputs", () => {

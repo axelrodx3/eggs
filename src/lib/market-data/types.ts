@@ -74,6 +74,8 @@ export type MarketHistoryResponse = {
   errorCode: string | null;
   fetchedAt: string;
   periodChangePercent: number | null;
+  /** True when candles are approximated from live quote data (no historical API access). */
+  isSyntheticHistory?: boolean;
 };
 
 export interface MarketDataProviderInterface {

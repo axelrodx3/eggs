@@ -123,5 +123,6 @@ export function useMarketHistory(
     loading,
     refresh,
     periodChangePercent: data?.periodChangePercent ?? null,
+    isSyntheticHistory: data?.isSyntheticHistory ?? false,
   };
 }

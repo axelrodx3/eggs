@@ -49,7 +49,7 @@ export function AssetInfoPanel({
       ? "Index"
       : asset.sector;
 
-  const { chartPoints, loading: historyLoading, periodChangePercent } =
+  const { chartPoints, loading: historyLoading, periodChangePercent, isSyntheticHistory } =
     useMarketHistory(asset.isPrivate ? null : asset.id, range, !asset.isPrivate);
 
   const dataLabel = quote ? getDataStateDisplay(getDataStateLabel(quote)) : null;
@@ -215,6 +215,7 @@ export function AssetInfoPanel({
                   assetTicker={asset.displayTicker ?? asset.id.toUpperCase()}
                   periodChangePercent={periodChangePercent}
                   range={range}
+                  synthetic={isSyntheticHistory}
                 />
               </>
             ) : null}
