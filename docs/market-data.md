@@ -48,7 +48,7 @@ Internal Next.js routes:
 | Nasdaq-100 | NDX | ^NDX |
 | SpaceX | — | *(excluded — private company)* |
 
-**Index note:** Finnhub’s free retail API may not return live index quotes for ^GSPC / ^NDX. If unavailable, the UI shows *“Index data unavailable on current provider plan”* — we do **not** substitute ETF proxies as index pricing.
+**Index note:** Finnhub’s free retail API may not return live index quotes for ^GSPC / ^NDX. If unavailable, the UI shows **“Unavailable”** — we do **not** substitute ETF proxies as index pricing.
 
 ## Caching
 

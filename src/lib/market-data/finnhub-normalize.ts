@@ -16,6 +16,21 @@ function isValidQuoteNumber(value: number | null | undefined): value is number {
   return value !== null && value !== undefined && Number.isFinite(value) && value > 0;
 }
 
+/** User-facing copy when a quote cannot be loaded — never expose provider plan/subscription errors. */
+export function resolveUnavailableReason(assetType: "equity" | "index"): string {
+  return assetType === "index" ? "Unavailable" : "Market data unavailable.";
+}
+
+export function sanitizePublicQuote(quote: MarketQuote): MarketQuote {
+  if (quote.assetType !== "index" || !quote.unavailable) {
+    return quote;
+  }
+  return {
+    ...quote,
+    unavailableReason: resolveUnavailableReason("index"),
+  };
+}
+
 export function createUnavailableQuote(
   assetId: string,
   assetName: string,
@@ -24,6 +39,8 @@ export function createUnavailableQuote(
   reason: string,
   fetchedAt: string,
 ): MarketQuote {
+  const message =
+    assetType === "index" ? resolveUnavailableReason("index") : reason;
   return {
     assetId,
     symbol: displaySymbol,
@@ -47,7 +64,7 @@ export function createUnavailableQuote(
     delayMinutes: null,
     isStale: false,
     unavailable: true,
-    unavailableReason: reason,
+    unavailableReason: message,
   };
 }
 
@@ -82,9 +99,7 @@ export function normalizeFinnhubQuote(
       assetName,
       displaySymbol,
       assetType,
-      assetType === "index"
-        ? "Index data unavailable on current provider plan."
-        : "Market data unavailable.",
+      resolveUnavailableReason(assetType),
       fetchedAt,
     );
   }

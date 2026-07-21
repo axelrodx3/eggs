@@ -25,6 +25,8 @@ import {
 import {
   createUnavailableQuote,
   normalizeFinnhubQuote,
+  resolveUnavailableReason,
+  sanitizePublicQuote,
 } from "./finnhub-normalize";
 import type {
   MarketCandle,
@@ -157,7 +159,7 @@ async function fetchSingleQuote(
         assetName,
         displaySymbol,
         assetType,
-        errorParsed.data.error,
+        resolveUnavailableReason(assetType),
         fetchedAt,
       );
     }
@@ -169,7 +171,7 @@ async function fetchSingleQuote(
         assetName,
         displaySymbol,
         assetType,
-        "Invalid provider response.",
+        resolveUnavailableReason(assetType),
         fetchedAt,
       );
     }
@@ -183,10 +185,6 @@ async function fetchSingleQuote(
       fetchedAt,
     );
   } catch (error) {
-    const reason =
-      error instanceof MarketDataError
-        ? error.message
-        : "Market data unavailable.";
     if (error instanceof MarketDataError && error.code === "rate_limit") {
       throw error;
     }
@@ -195,7 +193,7 @@ async function fetchSingleQuote(
       assetName,
       displaySymbol,
       assetType,
-      reason,
+      resolveUnavailableReason(assetType),
       fetchedAt,
     );
   }
@@ -234,11 +232,13 @@ async function fetchAllQuotes(
 
   const quotesByAssetId: Record<string, MarketQuote> = { ...existingQuotes };
   for (const quote of results) {
-    quotesByAssetId[quote.assetId] = quote.unavailable
-      ? existingQuotes[quote.assetId]?.price
-        ? { ...existingQuotes[quote.assetId], isStale: true }
-        : quote
-      : quote;
+    quotesByAssetId[quote.assetId] = sanitizePublicQuote(
+      quote.unavailable
+        ? existingQuotes[quote.assetId]?.price
+          ? { ...existingQuotes[quote.assetId], isStale: true }
+          : quote
+        : quote,
+    );
   }
 
   const validQuotes = Object.values(quotesByAssetId).filter(
@@ -321,7 +321,7 @@ async function fetchHistoryForAsset(
         status: "unavailable",
         error:
           asset.assetType === "index"
-            ? "Index historical data unavailable on current provider plan."
+            ? "Unavailable"
             : "Historical data unavailable.",
         errorCode: "historical_unavailable",
         fetchedAt,
@@ -379,7 +379,15 @@ export async function getFinnhubQuotes(): Promise<MarketQuotesResponse> {
   const ttl = getServerCacheTtlMs(marketStateGuess);
 
   if (stale && !stale.expired) {
-    return stale.value;
+    return {
+      ...stale.value,
+      quotesByAssetId: Object.fromEntries(
+        Object.entries(stale.value.quotesByAssetId).map(([id, quote]) => [
+          id,
+          sanitizePublicQuote(quote),
+        ]),
+      ),
+    };
   }
 
   return dedupeRequest(cacheKey, async () => {

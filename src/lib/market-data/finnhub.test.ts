@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { publicMarketAssetIds } from "@/data/assets";
 import { assertPublicAssetId } from "./allowlist";
-import { normalizeFinnhubQuote } from "./finnhub-normalize";
+import { normalizeFinnhubQuote, createUnavailableQuote, resolveUnavailableReason } from "./finnhub-normalize";
 import {
   calculateChange,
   parseProviderNumber,
@@ -94,6 +94,46 @@ describe("normalizeFinnhubQuote", () => {
     );
     expect(quote.price).toBeNull();
     expect(quote.price).not.toBe(0);
+  });
+
+  it("uses generic unavailable copy for indexes", () => {
+    const quote = normalizeFinnhubQuote(
+      "sp500",
+      "SPX",
+      "S&P 500 Index",
+      "index",
+      { c: 0, d: null, dp: null, h: 0, l: 0, o: 0, pc: 0, t: 0 },
+      new Date().toISOString(),
+    );
+    expect(quote.unavailableReason).toBe("Unavailable");
+  });
+});
+
+describe("resolveUnavailableReason", () => {
+  it("never exposes provider subscription errors for indexes", () => {
+    const quote = createUnavailableQuote(
+      "sp500",
+      "S&P 500 Index",
+      "SPX",
+      "index",
+      "Market data subscription required for CFD indices.",
+      new Date().toISOString(),
+    );
+    expect(quote.unavailableReason).toBe("Unavailable");
+    expect(resolveUnavailableReason("index")).toBe("Unavailable");
+  });
+
+  it("sanitizes stale cached index quotes at the API boundary", async () => {
+    const { sanitizePublicQuote } = await import("./finnhub-normalize");
+    const stale = createUnavailableQuote(
+      "ndx",
+      "Nasdaq-100 Index",
+      "NDX",
+      "index",
+      "Market data subscription required for CFD indices.",
+      new Date().toISOString(),
+    );
+    expect(sanitizePublicQuote(stale).unavailableReason).toBe("Unavailable");
   });
 });
 

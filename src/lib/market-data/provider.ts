@@ -2,8 +2,23 @@ import "server-only";
 
 import { mockMarketProvider } from "./mock-provider";
 import { finnhubProvider } from "./finnhub";
-import type { MarketDataProviderInterface } from "./types";
+import { sanitizePublicQuote } from "./finnhub-normalize";
+import type { MarketDataProviderInterface, MarketQuotesResponse } from "./types";
 import { MarketDataError } from "./errors";
+
+function sanitizeQuotesPayload(
+  payload: MarketQuotesResponse,
+): MarketQuotesResponse {
+  return {
+    ...payload,
+    quotesByAssetId: Object.fromEntries(
+      Object.entries(payload.quotesByAssetId).map(([id, quote]) => [
+        id,
+        sanitizePublicQuote(quote),
+      ]),
+    ),
+  };
+}
 
 export function resolveMarketDataProvider(): MarketDataProviderInterface {
   const provider =
@@ -54,7 +69,7 @@ export async function fetchMarketQuotesResponse() {
   }
 
   try {
-    return await provider.fetchQuotes([]);
+    return sanitizeQuotesPayload(await provider.fetchQuotes([]));
   } catch (error) {
     if (error instanceof MarketDataError && error.code === "missing_api_key") {
       if (process.env.NODE_ENV === "production") {
