@@ -8,7 +8,7 @@ function XIcon({ className }: { className?: string }) {
     <svg
       viewBox="0 0 24 24"
       aria-hidden
-      className={className}
+      className={cn("block shrink-0", className)}
       fill="currentColor"
     >
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
@@ -16,9 +16,33 @@ function XIcon({ className }: { className?: string }) {
   );
 }
 
+function SocialIconFrame({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-[18px] w-[18px] items-center justify-center",
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
 function TelegramIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden className={className} fill="currentColor">
+    <svg
+      viewBox="1 3 22 18"
+      aria-hidden
+      className={cn("block h-full w-full shrink-0", className)}
+      fill="currentColor"
+    >
       <path d="M21.94 4.66c.24 1.02-.6 1.45-1.32 1.67l-14.9 5.73c-1.58.58-1.56 1.52-.27 1.92l3.82 1.2 1.45 4.42c.17.47.31.65.8.65.51 0 .74-.23 1.02-.51l2.45-2.38 5.08 3.74c.93.51 1.6.25 1.83-.86l3.01-14.16c.34-1.36-.5-1.98-1.41-1.63zM8.76 14.34l9.96-6.26c.44-.28.84-.13.51.17l-8.08 7.33-.29 2.79-2.1-4.03z" />
     </svg>
   );
@@ -67,14 +91,22 @@ export function SocialLinks({
       label: "X",
       ariaLabel: "X",
       href: siteConfig.social.x,
-      icon: <XIcon className={iconClassName} />,
+      icon: (
+        <SocialIconFrame className={iconClassName}>
+          <XIcon className="h-full w-full" />
+        </SocialIconFrame>
+      ),
     },
     {
       id: "telegram",
       label: "Telegram",
       ariaLabel: "Telegram",
       href: siteConfig.social.telegram,
-      icon: <TelegramIcon className={iconClassName} />,
+      icon: (
+        <SocialIconFrame className={iconClassName}>
+          <TelegramIcon className="h-full w-full" />
+        </SocialIconFrame>
+      ),
       disabledDim: true,
     },
     {

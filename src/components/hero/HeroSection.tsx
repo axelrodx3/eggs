@@ -50,14 +50,11 @@ export function HeroSection() {
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
-          <a
-            href={siteConfig.robinhoodUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2.5"
+          <div
+            className="mt-5 inline-flex min-h-11 cursor-default items-center gap-2.5"
             aria-label={`${siteConfig.availability} on Robinhood`}
           >
-            <span className="text-sm font-medium text-lime/90 transition-colors hover:text-lime">
+            <span className="text-sm font-medium text-lime/90">
               {siteConfig.availability}
             </span>
             <span className="inline-flex shrink-0 items-center opacity-100">
@@ -70,7 +67,7 @@ export function HeroSection() {
                 className="h-[18px] w-auto object-contain opacity-100 sm:h-5 lg:h-[22px]"
               />
             </span>
-          </a>
+          </div>
         </motion.div>
 
         <motion.div

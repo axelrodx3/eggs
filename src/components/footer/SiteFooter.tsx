@@ -15,14 +15,6 @@ export function SiteFooter() {
           <p className="mt-2 text-lime">{siteConfig.tagline}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <SocialLinks />
-            <a
-              href={siteConfig.robinhoodUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="focus-ring text-sm text-muted transition hover:text-lime"
-            >
-              Buy on Robinhood
-            </a>
           </div>
         </div>
 
