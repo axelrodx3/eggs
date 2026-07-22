@@ -60,11 +60,10 @@ export function HeroSection() {
             <span>{siteConfig.availability}</span>
             <Image
               src={siteConfig.socialAssets.robinhood}
-              alt=""
+              alt="Robinhood"
               width={20}
               height={20}
               className="h-5 w-5 shrink-0 object-contain"
-              aria-hidden
             />
           </a>
         </motion.div>

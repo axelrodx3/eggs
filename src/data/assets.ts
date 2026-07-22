@@ -1,6 +1,6 @@
-/** Final basket artwork dimensions (public/assets/eggs-basket.png). */
+/** Final basket artwork dimensions (public/assets/basket/eggs-basket-v2.png). */
 export const BASKET_IMAGE = {
-  src: "/assets/eggs-basket.png",
+  src: "/assets/basket/eggs-basket-v2.png",
   width: 1536,
   height: 1024,
   aspectRatio: "3 / 2",
@@ -48,7 +48,7 @@ export type BasketAsset = {
 };
 
 /**
- * Hotspots manually calibrated for public/assets/eggs-basket.png (1536×1024).
+ * Hotspots manually calibrated for public/assets/basket/eggs-basket-v2.png (1536×1024).
  * x/y = egg center; width/height = visual highlight; hitWidth/hitHeight = tap target.
  *
  * Finnhub provider symbols — display tickers (SPX, NDX) are separate from provider symbols.

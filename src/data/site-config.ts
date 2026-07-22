@@ -18,7 +18,7 @@ export const siteConfig = {
   },
   socialAssets: {
     dexscreener: "/assets/social/dexscreener.png",
-    robinhood: "/assets/social/robinhood.svg",
+    robinhood: "/assets/brands/robinhood-feather.png",
   },
   contractAddress: null as string | null,
   nav: [
