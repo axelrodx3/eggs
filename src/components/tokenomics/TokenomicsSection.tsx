@@ -65,7 +65,7 @@ export function TokenomicsSection() {
   const minimumBalance = formatEggsBalance(TOKENOMICS.minimumEligibleBalance);
 
   return (
-    <section id="tokenomics" className="scroll-mt-24 py-16 sm:py-24">
+    <section id="tokenomics" className="scroll-mt-[calc(var(--site-header-offset)+1rem)] py-16 sm:py-24">
       <div className="section-shell">
         <p className="section-kicker">Tokenomics</p>
         <h2 className="section-title max-w-3xl">Every Tax Builds the Basket.</h2>

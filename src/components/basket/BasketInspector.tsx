@@ -94,7 +94,7 @@ export function BasketInspector() {
   };
 
   return (
-    <section id="basket" className="scroll-mt-24 py-16 sm:py-24">
+    <section id="basket" className="scroll-mt-[calc(var(--site-header-offset)+1rem)] py-16 sm:py-24">
       <div className="section-shell">
         <p className="section-kicker">Interactive inspector</p>
         <h2 className="section-title">Explore the Basket</h2>

@@ -11,7 +11,7 @@ export function FaqSection() {
   const [openId, setOpenId] = useState<string | null>(faqItems[0]?.id ?? null);
 
   return (
-    <section id="faq" className="scroll-mt-24 py-16 sm:py-24">
+    <section id="faq" className="scroll-mt-[calc(var(--site-header-offset)+1rem)] py-16 sm:py-24">
       <div className="section-shell">
         <div className="mx-auto max-w-[1050px]">
           <p className="section-kicker">FAQ</p>

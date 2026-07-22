@@ -36,7 +36,7 @@ export function MarketTicker() {
         key={`${asset.id}${keySuffix}`}
         type="button"
         className={cn(
-          "focus-ring inline-flex min-w-[168px] shrink-0 items-center gap-2.5 rounded-xl border bg-surface-elevated/70 px-3 py-2 text-left transition",
+          "focus-ring inline-flex min-w-[168px] shrink-0 items-center gap-2.5 rounded-xl border bg-surface-elevated/70 px-3 py-2 text-left transition duration-200 ease-out",
           selected
             ? "border-lime/50 bg-lime/5"
             : "border-border/80 hover:border-lime/35",
@@ -82,10 +82,8 @@ export function MarketTicker() {
     );
   };
 
-  const duplicated = [...publicItems, ...publicItems];
-
   return (
-    <section id="market" className="scroll-mt-24 border-y border-border py-8 sm:py-10">
+    <section id="market" className="scroll-mt-[calc(var(--site-header-offset)+1rem)] border-y border-border py-8 sm:py-10">
       <div className="section-shell mb-3 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="section-kicker">Live market watch</p>
@@ -103,12 +101,20 @@ export function MarketTicker() {
         ) : null}
       </div>
 
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-background to-transparent sm:w-12" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-background to-transparent sm:w-12" />
-        <div className="overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className={cn("flex w-max gap-2 px-4 sm:gap-2.5 sm:px-6 lg:px-8 ticker-track")}>
-            {duplicated.map((asset, index) => renderItem(asset, `-${index}`))}
+        <div className="overflow-hidden pb-1">
+          <div className="ticker-track flex w-max gap-2 px-4 sm:gap-2.5 sm:px-6 lg:px-8">
+            <div className="flex shrink-0 gap-2 sm:gap-2.5" aria-label="Market quotes">
+              {publicItems.map((asset) => renderItem(asset))}
+            </div>
+            <div
+              className="flex shrink-0 gap-2 sm:gap-2.5"
+              aria-hidden="true"
+            >
+              {publicItems.map((asset, index) => renderItem(asset, `-dup-${index}`))}
+            </div>
           </div>
         </div>
       </div>

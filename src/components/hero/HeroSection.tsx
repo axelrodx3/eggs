@@ -14,7 +14,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden pt-28 pb-12 sm:pt-32 sm:pb-20"
+      className="relative overflow-hidden pt-[calc(var(--site-header-offset)+3rem)] pb-12 sm:pt-[calc(var(--site-header-offset)+4rem)] sm:pb-20"
     >
       <div
         aria-hidden

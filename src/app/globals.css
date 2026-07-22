@@ -13,6 +13,10 @@
   --danger: #ff5c5c;
   --glow: rgba(199, 240, 0, 0.18);
   --glow-strong: rgba(199, 240, 0, 0.24);
+  --site-header-height: 4rem;
+  --site-header-offset: calc(
+    var(--site-header-height) + env(safe-area-inset-top, 0px)
+  );
 }
 
 @theme inline {
@@ -124,19 +128,16 @@ body {
 
 .ticker-track {
   animation: ticker-scroll 36s linear infinite;
+  will-change: transform;
 }
 
-.ticker-track:hover {
-  animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track {
-    animation: none;
+@media (hover: hover) and (pointer: fine) {
+  .ticker-track:hover {
+    animation-play-state: paused;
   }
 }
 
-@media (max-width: 768px) {
+@media (prefers-reduced-motion: reduce) {
   .ticker-track {
     animation: none;
   }
