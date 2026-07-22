@@ -2,11 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeftRight, Landmark, Users } from "lucide-react";
-import { basketAssets } from "@/data/assets";
-import { AssetLogo } from "@/components/assets/AssetLogo";
 import { TaxAllocationChart } from "@/components/tokenomics/TaxAllocationChart";
 import { formatEggsBalance, TOKENOMICS } from "@/data/tokenomics";
-import { cn } from "@/lib/utils";
 
 const rewardFlowSteps = [
   {
@@ -23,7 +20,7 @@ const rewardFlowSteps = [
   {
     title: "Eligible Holders",
     description:
-      "The Stocks Vault manages basket-based rewards for qualifying holders.",
+      "The Stocks Vault manages basket based rewards for qualifying holders.",
     icon: Users,
   },
 ];
@@ -107,10 +104,10 @@ export function TokenomicsSection() {
               The full tax allocation is sent to the Stocks Vault, which uses those
               funds in connection with the project’s ten-asset basket. Basket
               holder rewards are handled externally through Flap’s existing Stocks
-              Vault—not through a separate custom $EGGS vault.
+              Vault not through a separate custom $EGGS vault.
             </p>
             <p className="text-sm leading-relaxed text-foreground/75">
-              The separate dividend-tracker allocation remains at 0% because basket
+              The separate dividend tracker allocation remains at 0% because basket
               reward handling is managed through the Stocks Vault, even though
               Flap’s interface displays that field independently.
             </p>
@@ -160,38 +157,6 @@ export function TokenomicsSection() {
               ))}
             </div>
           </div>
-        </div>
-
-        <div className="mt-10">
-          <h3 className="text-lg font-semibold">Ten-asset basket</h3>
-          <p className="mt-2 max-w-3xl text-sm text-foreground/75">
-            Flap’s Stocks Vault is associated with the same ten assets represented
-            throughout the $EGGS basket experience.
-          </p>
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {basketAssets.map((asset) => (
-              <li
-                key={asset.id}
-                className={cn(
-                  "flex min-h-[88px] items-center gap-3 rounded-2xl border border-border bg-surface-elevated/70 px-3 py-3",
-                )}
-              >
-                <AssetLogo
-                  src={asset.logoPath}
-                  alt={asset.name}
-                  size={40}
-                  fallbackText={asset.displayTicker ?? "—"}
-                  containerClassName="rounded-xl"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{asset.name}</p>
-                  <p className="truncate text-xs text-muted">
-                    {asset.displayTicker ?? "Private Company"}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>

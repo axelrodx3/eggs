@@ -6,9 +6,7 @@ export const siteConfig = {
   headlineLine2: "Every Giant.",
   heroCopy:
     "$EGGS brings ten recognizable market giants into one unforgettable memecoin identity.",
-  availability: "Launching on Robinhood",
-  disclaimer:
-    "The basket represents the project theme. Holding $EGGS does not automatically constitute ownership of the displayed securities.",
+  availability: "On Robinhood",
   robinhoodUrl: "https://robinhood.com",
   social: {
     x: "https://x.com/eggsonhood",
@@ -19,6 +17,7 @@ export const siteConfig = {
   },
   socialAssets: {
     dexscreener: "/assets/social/dexscreener.png",
+    robinhood: "/assets/social/robinhood.svg",
   },
   contractAddress: null as string | null,
   nav: [

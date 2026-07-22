@@ -79,7 +79,7 @@ export function AssetCard({
           {isDevelopmentMock ? " · Dev" : ""}
         </p>
       ) : (
-        <p className="mt-2 text-xs text-muted">—</p>
+        <p className="mt-2 text-xs text-muted">N/A</p>
       )}
     </motion.button>
   );
@@ -92,7 +92,7 @@ export function AssetGrid() {
         <p className="section-kicker">Ten assets</p>
         <h2 className="section-title">Basket Asset Grid</h2>
         <p className="mt-4 max-w-2xl text-foreground/75">
-          Every egg in the basket—select a card to jump back to the inspector.
+          Every egg in the basket. Select a card to jump back to the inspector.
         </p>
         <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
           {basketAssets.map((asset, index) => (

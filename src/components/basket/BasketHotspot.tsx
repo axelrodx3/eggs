@@ -11,8 +11,8 @@ type BasketHotspotProps = {
   debugMode: boolean;
   tabIndex?: number;
   onSelect: () => void;
-  onHover: () => void;
-  onLeave: () => void;
+  onPointerEnter: () => void;
+  onPointerLeave: () => void;
 };
 
 export function BasketHotspot({
@@ -22,8 +22,8 @@ export function BasketHotspot({
   debugMode,
   tabIndex = 0,
   onSelect,
-  onHover,
-  onLeave,
+  onPointerEnter,
+  onPointerLeave,
 }: BasketHotspotProps) {
   const { hotspot } = asset;
   const hitWidth = hotspot.hitWidth ?? hotspot.width * 1.14;
@@ -42,7 +42,7 @@ export function BasketHotspot({
       aria-pressed={selected}
       tabIndex={tabIndex}
       className={cn(
-        "group/basket-hotspot basket-hotspot-hit absolute cursor-pointer border-0 bg-transparent p-0 outline-none pointer-events-auto",
+        "basket-hotspot-hit absolute cursor-pointer border-0 bg-transparent p-0 outline-none pointer-events-auto",
         debugMode && "border border-dashed border-lime/60",
       )}
       style={{
@@ -59,29 +59,28 @@ export function BasketHotspot({
         onSelect();
         event.currentTarget.blur();
       }}
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onPointerCancel={onPointerLeave}
     >
-      <motion.span
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] bg-transparent transition-[box-shadow,border-color,background-color,transform] duration-200 ease-out",
-          hovered &&
-            "border border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]",
-          "group-focus-visible/basket-hotspot:border group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
-        )}
-        style={{
-          width: `${visualWidthPct}%`,
-          height: `${visualHeightPct}%`,
-        }}
-        initial={false}
-        animate={{
-          x: "-50%",
-          y: hovered ? "calc(-50% - 4px)" : "-50%",
-          scale: hovered ? 1.04 : 1,
-        }}
-        transition={{ duration: 0.18, ease: "easeOut" }}
-      />
+      {hovered ? (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]"
+          style={{
+            width: `${visualWidthPct}%`,
+            height: `${visualHeightPct}%`,
+          }}
+          initial={{ x: "-50%", y: "-50%", scale: 1 }}
+          animate={{
+            x: "-50%",
+            y: "calc(-50% - 4px)",
+            scale: 1.04,
+          }}
+          exit={{ x: "-50%", y: "-50%", scale: 1 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+        />
+      ) : null}
 
       {hovered ? (
         <span

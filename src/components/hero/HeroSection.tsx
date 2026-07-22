@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/data/site-config";
@@ -52,12 +53,23 @@ export function HeroSection() {
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
-          <p className="mt-6 text-sm font-medium text-lime/90">
-            {siteConfig.availability}
-          </p>
-          <p className="mt-3 max-w-xl text-xs leading-relaxed text-muted">
-            {siteConfig.disclaimer}
-          </p>
+          <a
+            href={siteConfig.robinhoodUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-ring mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-lime/90 transition hover:text-lime"
+            aria-label={`${siteConfig.availability} on Robinhood`}
+          >
+            <Image
+              src={siteConfig.socialAssets.robinhood}
+              alt=""
+              width={20}
+              height={20}
+              className="h-5 w-5 shrink-0 object-contain"
+              aria-hidden
+            />
+            <span>{siteConfig.availability}</span>
+          </a>
         </motion.div>
 
         <motion.div

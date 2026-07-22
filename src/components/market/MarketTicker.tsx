@@ -74,7 +74,7 @@ export function MarketTicker() {
             </div>
           ) : (
             <span className="text-xs text-muted">
-              {loading ? "Loading…" : status === "setup_required" ? "Setup required" : "—"}
+              {loading ? "Loading…" : status === "setup_required" ? "Setup required" : "N/A"}
             </span>
           )}
         </div>

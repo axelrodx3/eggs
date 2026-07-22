@@ -44,11 +44,6 @@ export function SiteFooter() {
               </button>
             </div>
           </div>
-          <p className="text-xs leading-relaxed text-muted">
-            Memecoins are speculative and volatile. Nothing on this site is
-            financial advice. Holding $EGGS does not automatically constitute
-            ownership of displayed securities.
-          </p>
           <p className="text-xs text-muted">
             Market data provided by{" "}
             <a

@@ -4,7 +4,7 @@ export function formatPrice(
   assetType: "equity" | "index" = "equity",
 ): string {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return "—";
+    return "N/A";
   }
   if (assetType === "index") {
     return new Intl.NumberFormat("en-US", {
@@ -22,7 +22,7 @@ export function formatPrice(
 
 export function formatChange(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return "—";
+    return "N/A";
   }
   const sign = value >= 0 ? "+" : "";
   return `${sign}${value.toFixed(2)}`;
@@ -30,7 +30,7 @@ export function formatChange(value: number | null | undefined): string {
 
 export function formatPercent(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return "—";
+    return "N/A";
   }
   const sign = value >= 0 ? "+" : "";
   return `${sign}${value.toFixed(2)}%`;
@@ -38,7 +38,7 @@ export function formatPercent(value: number | null | undefined): string {
 
 export function formatVolume(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return "—";
+    return "N/A";
   }
   if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
   if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
@@ -47,7 +47,7 @@ export function formatVolume(value: number | null | undefined): string {
 }
 
 export function formatMarketCap(value: number | null): string {
-  if (value === null || !Number.isFinite(value)) return "—";
+  if (value === null || !Number.isFinite(value)) return "N/A";
   if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
   if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
   if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;

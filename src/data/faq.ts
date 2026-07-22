@@ -15,7 +15,7 @@ export const faqItems: FaqItem[] = [
     id: "basket-represent",
     question: "What does the basket represent?",
     answer:
-      "The basket is a creative representation of widely known companies and indexes. It communicates the project's theme and narrative—it is not a direct claim of proportional exposure to each asset.",
+      "The basket is a creative representation of widely known companies and indexes. It communicates the project's theme and narrative. It is not a direct claim of proportional exposure to each asset.",
   },
   {
     id: "ownership",
@@ -33,7 +33,7 @@ export const faqItems: FaqItem[] = [
     id: "where-buy",
     question: "Where can I buy $EGGS?",
     answer:
-      "$EGGS is intended to launch on Robinhood. Use the official listing page once published—avoid unverified links or contract addresses shared outside official channels.",
+      "$EGGS is intended to launch on Robinhood. Use the official listing page once published. Avoid unverified links or contract addresses shared outside official channels.",
   },
   {
     id: "blockchain",
@@ -51,7 +51,7 @@ export const faqItems: FaqItem[] = [
     id: "risks",
     question: "What are the risks?",
     answer:
-      "Memecoins are highly speculative. Prices can be volatile, liquidity may vary, and you could lose your entire investment. This site is informational—not financial advice. Do your own research.",
+      "Memecoins are highly speculative. Prices can be volatile, liquidity may vary, and you could lose your entire investment. This site is informational, not financial advice. Do your own research.",
   },
   {
     id: "announcements",

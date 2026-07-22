@@ -276,7 +276,7 @@ export const basketAssets: BasketAsset[] = [
     providerSymbols: {},
     assetType: "private",
     description:
-      "Private aerospace company developing launch vehicles, Starlink, and next-generation space systems. Included as a thematic representation—not a tradable public equity.",
+      "Private aerospace company developing launch vehicles, Starlink, and next-generation space systems. Included as a thematic representation, not a tradable public equity.",
     sector: "Private Company",
     officialUrl: "https://www.spacex.com",
     logoPath: "/assets/logos/spacex.svg",

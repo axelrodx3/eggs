@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import { basketAssets, basketFocusOrder } from "@/data/assets";
 import { useMarketQuotes } from "@/hooks/useMarketQuotes";
@@ -17,16 +23,21 @@ export function BasketInspector() {
   const searchParams = useSearchParams();
   const { selectedId, selectedAsset, selectAsset } = useAssetSelection();
   const { quotesByAssetId, loading, isDevelopmentMock } = useMarketQuotes();
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [hoveredAssetId, setHoveredAssetId] = useState<string | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
 
   const debugMode = isHotspotDebugEnabled(searchParams);
   const quote = quotesByAssetId[selectedAsset.id] ?? null;
 
+  const clearHoveredAsset = useCallback(() => {
+    setHoveredAssetId(null);
+  }, []);
+
   const handleSelect = useCallback(
     (id: string) => {
       selectAsset(id);
+      clearHoveredAsset();
       setMobilePanelOpen(true);
       if (window.innerWidth < 1024) {
         const panel = document.getElementById("asset-info-panel");
@@ -39,23 +50,47 @@ export function BasketInspector() {
         }
       }
     },
-    [selectAsset],
+    [clearHoveredAsset, selectAsset],
   );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMobilePanelOpen(false);
     };
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") {
+        clearHoveredAsset();
+      }
+    };
+
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [clearHoveredAsset]);
 
   const handleDebugStageClick = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!debugMode || !stageRef.current) return;
     const rect = stageRef.current.getBoundingClientRect();
     const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
     const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
-    logHotspotCalibration(xPercent, yPercent, hoveredId ?? selectedId);
+    logHotspotCalibration(xPercent, yPercent, hoveredAssetId ?? selectedId);
+  };
+
+  const handleHotspotLayerPointerLeave = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    const nextTarget = event.relatedTarget;
+    if (
+      nextTarget instanceof Node &&
+      event.currentTarget.contains(nextTarget)
+    ) {
+      return;
+    }
+    clearHoveredAsset();
   };
 
   return (
@@ -69,7 +104,7 @@ export function BasketInspector() {
 
         {debugMode ? (
           <p className="mt-2 rounded-lg border border-lime/30 bg-lime/5 px-3 py-2 text-xs text-lime">
-            Hotspot debug enabled · hovered: {hoveredId ?? "—"} · selected:{" "}
+            Hotspot debug enabled · hovered: {hoveredAssetId ?? "none"} · selected:{" "}
             {selectedId}
           </p>
         ) : null}
@@ -82,6 +117,7 @@ export function BasketInspector() {
                   ref={stageRef}
                   className="relative"
                   onClick={handleDebugStageClick}
+                  onPointerLeave={clearHoveredAsset}
                 >
                   <BasketVisual
                     variant="inspector"
@@ -89,11 +125,14 @@ export function BasketInspector() {
                     tilt={false}
                     interactive
                   >
-                    <div className="basket-hotspot-layer absolute inset-0">
+                    <div
+                      className="basket-hotspot-layer absolute inset-0"
+                      onPointerLeave={handleHotspotLayerPointerLeave}
+                    >
                       {basketFocusOrder.map((assetId) => {
                         const asset = basketAssets.find((item) => item.id === assetId);
                         if (!asset) return null;
-                        const hovered = hoveredId === asset.id;
+                        const hovered = hoveredAssetId === asset.id;
                         const selected = selectedId === asset.id;
                         return (
                           <BasketHotspot
@@ -104,9 +143,9 @@ export function BasketInspector() {
                             debugMode={debugMode}
                             tabIndex={basketFocusOrder.indexOf(asset.id) + 1}
                             onSelect={() => handleSelect(asset.id)}
-                            onHover={() => setHoveredId(asset.id)}
-                            onLeave={() =>
-                              setHoveredId((current) =>
+                            onPointerEnter={() => setHoveredAssetId(asset.id)}
+                            onPointerLeave={() =>
+                              setHoveredAssetId((current) =>
                                 current === asset.id ? null : current,
                               )
                             }
