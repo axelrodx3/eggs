@@ -8,10 +8,7 @@ type BasketHotspotProps = {
   asset: BasketAsset;
   selected: boolean;
   hovered: boolean;
-  dimmed: boolean;
   debugMode: boolean;
-  panMode?: boolean;
-  disabled?: boolean;
   tabIndex?: number;
   onSelect: () => void;
   onHover: () => void;
@@ -22,10 +19,7 @@ export function BasketHotspot({
   asset,
   selected,
   hovered,
-  dimmed,
   debugMode,
-  panMode = false,
-  disabled = false,
   tabIndex = 0,
   onSelect,
   onHover,
@@ -37,23 +31,19 @@ export function BasketHotspot({
   const rotation = hotspot.rotation ?? 0;
   const priority = hotspot.priority ?? 10;
   const tickerLabel = asset.displayTicker ?? "Private Company";
-  const showHoverHighlight = hovered;
   const tooltipAbove = hotspot.y >= 42;
   const visualWidthPct = (hotspot.width / hitWidth) * 100;
   const visualHeightPct = (hotspot.height / hitHeight) * 100;
+  const isRaised = hovered || selected;
 
   return (
     <button
       type="button"
       aria-label={`Inspect ${asset.name}${asset.displayTicker ? `, ${asset.displayTicker}` : ", private company"}`}
       aria-pressed={selected}
-      tabIndex={disabled ? -1 : tabIndex}
-      disabled={disabled}
+      tabIndex={tabIndex}
       className={cn(
-        "group/basket-hotspot basket-hotspot-hit absolute border-0 bg-transparent p-0 outline-none",
-        disabled || panMode
-          ? "pointer-events-none cursor-default"
-          : "cursor-pointer pointer-events-auto",
+        "group/basket-hotspot basket-hotspot-hit absolute cursor-pointer border-0 bg-transparent p-0 outline-none pointer-events-auto",
         debugMode && "border border-dashed border-lime/60",
       )}
       style={{
@@ -62,28 +52,28 @@ export function BasketHotspot({
         width: `${hitWidth}%`,
         height: `${hitHeight}%`,
         transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        zIndex: showHoverHighlight ? priority + 30 : priority,
-        touchAction: panMode ? "none" : "manipulation",
+        zIndex: isRaised ? priority + 30 : priority,
+        touchAction: "manipulation",
       }}
       onClick={(event) => {
         event.stopPropagation();
-        if (!disabled && !panMode) onSelect();
+        onSelect();
       }}
-      onMouseEnter={() => {
-        if (!panMode) onHover();
-      }}
+      onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      onFocus={() => {
-        if (!panMode) onHover();
-      }}
+      onFocus={onHover}
       onBlur={onLeave}
     >
       <motion.span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border border-transparent bg-transparent transition-[box-shadow,border-color,background-color]",
-          showHoverHighlight &&
-            "border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.2)]",
+          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border bg-transparent transition-[box-shadow,border-color,background-color] duration-200 ease-out",
+          hovered &&
+            "border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]",
+          selected &&
+            !hovered &&
+            "border-lime/80 bg-lime/10 shadow-[0_6px_16px_rgba(0,0,0,0.32),0_0_18px_rgba(199,240,0,0.16)]",
+          selected && hovered && "border-lime bg-lime/14",
           "group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
         )}
         style={{
@@ -93,17 +83,13 @@ export function BasketHotspot({
         initial={false}
         animate={{
           x: "-50%",
-          y: showHoverHighlight ? "-56%" : "-50%",
-          scale: showHoverHighlight ? 1.05 : 1,
-          opacity: dimmed ? 0.9 : 1,
+          y: hovered ? "calc(-50% - 4px)" : "-50%",
+          scale: hovered ? 1.04 : selected ? 1.02 : 1,
         }}
-        transition={{
-          duration: showHoverHighlight ? 0.16 : 0.14,
-          ease: "easeOut",
-        }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
       />
 
-      {showHoverHighlight && !panMode ? (
+      {hovered ? (
         <span
           className={cn(
             "pointer-events-none absolute left-1/2 z-40 min-w-[7.5rem] -translate-x-1/2 rounded-xl border border-border bg-background/95 px-3 py-2 text-center shadow-lg",

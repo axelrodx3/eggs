@@ -17,7 +17,6 @@ type BasketVisualProps = {
   floating?: boolean;
   tilt?: boolean;
   variant?: "hero" | "inspector";
-  resetKey?: number;
   interactive?: boolean;
   children?: React.ReactNode;
 };
@@ -28,7 +27,6 @@ export function BasketVisual({
   floating = true,
   tilt = true,
   variant = "hero",
-  resetKey = 0,
   interactive = false,
   children,
 }: BasketVisualProps) {
@@ -51,11 +49,6 @@ export function BasketVisual({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-
-  useEffect(() => {
-    pointerX.set(0);
-    pointerY.set(0);
-  }, [resetKey, pointerX, pointerY]);
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!tilt || reducedMotion || interactive) return;
@@ -116,7 +109,7 @@ export function BasketVisual({
             sizes={
               variant === "hero"
                 ? "(max-width: 1024px) 100vw, 48rem"
-                : "(max-width: 1024px) 100vw, 36rem"
+                : "(max-width: 1024px) 100vw, 42rem"
             }
             className="pointer-events-none relative z-0 h-full w-full select-none object-contain"
             draggable={false}
