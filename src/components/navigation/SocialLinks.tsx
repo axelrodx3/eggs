@@ -49,6 +49,7 @@ type SocialLinksProps = {
 type SocialItem = {
   id: string;
   label: string;
+  ariaLabel: string;
   href: string | null;
   icon: React.ReactNode;
   disabledDim?: boolean;
@@ -64,12 +65,14 @@ export function SocialLinks({
     {
       id: "x",
       label: "X",
+      ariaLabel: "X",
       href: siteConfig.social.x,
       icon: <XIcon className={iconClassName} />,
     },
     {
       id: "telegram",
       label: "Telegram",
+      ariaLabel: "Telegram",
       href: siteConfig.social.telegram,
       icon: <TelegramIcon className={iconClassName} />,
       disabledDim: true,
@@ -77,6 +80,7 @@ export function SocialLinks({
     {
       id: "dexscreener",
       label: "Dexscreener",
+      ariaLabel: "View $EGGS on DexScreener",
       href: siteConfig.social.dexscreener,
       icon: <DexscreenerIcon />,
     },
@@ -98,7 +102,7 @@ export function SocialLinks({
               target="_blank"
               rel="noopener noreferrer"
               className={cn(baseClass, "text-muted hover:text-lime")}
-              aria-label={item.label}
+              aria-label={item.ariaLabel}
               title={item.label}
             >
               {item.icon}
@@ -118,7 +122,7 @@ export function SocialLinks({
               "cursor-not-allowed",
               item.disabledDim ? "text-muted/45" : "opacity-100",
             )}
-            aria-label={item.label}
+            aria-label={item.ariaLabel}
             title={item.label}
             disabled
           >

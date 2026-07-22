@@ -54,17 +54,22 @@ export function HeroSection() {
             href={siteConfig.robinhoodUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-lime/90 transition hover:text-lime"
+            className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2.5"
             aria-label={`${siteConfig.availability} on Robinhood`}
           >
-            <span>{siteConfig.availability}</span>
-            <Image
-              src={siteConfig.socialAssets.robinhood}
-              alt="Robinhood"
-              width={20}
-              height={20}
-              className="h-5 w-5 shrink-0 object-contain"
-            />
+            <span className="text-sm font-medium text-lime/90 transition-colors hover:text-lime">
+              {siteConfig.availability}
+            </span>
+            <span className="inline-flex shrink-0 items-center opacity-100">
+              <Image
+                src={siteConfig.socialAssets.robinhood}
+                alt=""
+                width={22}
+                height={28}
+                aria-hidden
+                className="h-[18px] w-auto object-contain opacity-100 sm:h-5 lg:h-[22px]"
+              />
+            </span>
           </a>
         </motion.div>
 
