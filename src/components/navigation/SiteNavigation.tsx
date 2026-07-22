@@ -106,53 +106,57 @@ export function SiteNavigation() {
           open && "lg:border-transparent lg:bg-transparent",
         )}
       >
-        <div className="section-shell flex h-16 items-center justify-between gap-3">
-          <button
-            type="button"
-            className="focus-ring shrink-0 rounded-md"
-            onClick={() => scrollToSection("hero")}
-            aria-label={`${siteConfig.name} home`}
-          >
-            <Image
-              src={siteConfig.brandAssets.wordmark}
-              alt={siteConfig.name}
-              width={132}
-              height={40}
-              priority
-              className="h-9 w-auto max-w-[8.5rem] object-contain sm:h-10 sm:max-w-[9.75rem]"
-            />
-          </button>
+        <div className="section-shell flex h-16 items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+          <div className="flex min-w-0 items-center justify-start">
+            <button
+              type="button"
+              className="focus-ring shrink-0 rounded-md"
+              onClick={() => scrollToSection("hero")}
+              aria-label={`${siteConfig.name} home`}
+            >
+              <Image
+                src={siteConfig.brandAssets.wordmark}
+                alt={siteConfig.name}
+                width={132}
+                height={40}
+                priority
+                className="h-9 w-auto max-w-[8.5rem] object-contain sm:h-10 sm:max-w-[9.75rem] lg:h-[2.625rem] lg:max-w-[10.25rem]"
+              />
+            </button>
+          </div>
 
           <nav
-            className="hidden items-center gap-1 lg:flex"
+            className="hidden items-center justify-center gap-4 lg:flex"
             aria-label="Primary"
           >
             {siteConfig.nav.map((item) => navItem(item.id, item.label))}
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
-            <SocialLinks />
-            <a
-              href={siteConfig.robinhoodUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="focus-ring ml-1 shrink-0 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-black transition duration-200 ease-out hover:bg-lime-dim"
-            >
-              Buy $EGGS
-            </a>
-          </div>
+          <div className="flex items-center justify-end">
+            <div className="hidden items-center gap-4 lg:flex">
+              <SocialLinks className="gap-2" />
+              <a
+                href={siteConfig.robinhoodUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring shrink-0 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-black transition duration-200 ease-out hover:bg-lime-dim"
+              >
+                Buy $EGGS
+              </a>
+            </div>
 
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className="focus-ring rounded-md p-2 lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((value) => !value)}
-          >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="focus-ring rounded-md p-2 lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((value) => !value)}
+            >
+              {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </header>
 
