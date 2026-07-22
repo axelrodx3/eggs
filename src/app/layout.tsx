@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "$EGGS | One Basket. Every Giant.",
+  title: "$EGGS",
   description:
     "The market in one basket. $EGGS brings ten recognizable market giants into one unforgettable memecoin identity.",
   icons: {
