@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   title: "$EGGS | One Basket. Every Giant.",
   description:
     "The market in one basket. $EGGS brings ten recognizable market giants into one unforgettable memecoin identity.",
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
   openGraph: {
     title: "$EGGS | One Basket. Every Giant.",
     description:

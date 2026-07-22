@@ -51,7 +51,7 @@ export function BasketHotspot({
         width: `${hitWidth}%`,
         height: `${hitHeight}%`,
         transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        zIndex: hovered ? priority + 30 : selected ? priority + 20 : priority,
+        zIndex: hovered ? priority + 30 : priority,
         touchAction: "manipulation",
       }}
       onClick={(event) => {
@@ -63,17 +63,6 @@ export function BasketHotspot({
       onPointerLeave={onPointerLeave}
       onPointerCancel={onPointerLeave}
     >
-      {selected && !hovered ? (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 block -translate-x-1/2 -translate-y-1/2 rounded-[999px] border border-lime/75 bg-lime/8 shadow-[0_0_18px_rgba(199,240,0,0.16)] transition duration-200 ease-out"
-          style={{
-            width: `${visualWidthPct}%`,
-            height: `${visualHeightPct}%`,
-          }}
-        />
-      ) : null}
-
       {hovered ? (
         <motion.span
           aria-hidden
