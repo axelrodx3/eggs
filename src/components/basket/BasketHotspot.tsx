@@ -34,7 +34,6 @@ export function BasketHotspot({
   const tooltipAbove = hotspot.y >= 42;
   const visualWidthPct = (hotspot.width / hitWidth) * 100;
   const visualHeightPct = (hotspot.height / hitHeight) * 100;
-  const isRaised = hovered || selected;
 
   return (
     <button
@@ -52,17 +51,16 @@ export function BasketHotspot({
         width: `${hitWidth}%`,
         height: `${hitHeight}%`,
         transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        zIndex: isRaised ? priority + 30 : priority,
+        zIndex: hovered ? priority + 30 : priority,
         touchAction: "manipulation",
       }}
       onClick={(event) => {
         event.stopPropagation();
         onSelect();
+        event.currentTarget.blur();
       }}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      onFocus={onHover}
-      onBlur={onLeave}
     >
       <motion.span
         aria-hidden
@@ -70,10 +68,6 @@ export function BasketHotspot({
           "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] bg-transparent transition-[box-shadow,border-color,background-color,transform] duration-200 ease-out",
           hovered &&
             "border border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]",
-          selected &&
-            !hovered &&
-            "border border-lime/80 bg-lime/10 shadow-[0_6px_16px_rgba(0,0,0,0.32),0_0_18px_rgba(199,240,0,0.16)]",
-          selected && hovered && "border border-lime bg-lime/14",
           "group-focus-visible/basket-hotspot:border group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
         )}
         style={{
@@ -84,7 +78,7 @@ export function BasketHotspot({
         animate={{
           x: "-50%",
           y: hovered ? "calc(-50% - 4px)" : "-50%",
-          scale: hovered ? 1.04 : selected ? 1.02 : 1,
+          scale: hovered ? 1.04 : 1,
         }}
         transition={{ duration: 0.18, ease: "easeOut" }}
       />
