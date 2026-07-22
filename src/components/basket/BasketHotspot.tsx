@@ -67,14 +67,14 @@ export function BasketHotspot({
       <motion.span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] border bg-transparent transition-[box-shadow,border-color,background-color] duration-200 ease-out",
+          "pointer-events-none absolute left-1/2 top-1/2 block rounded-[999px] bg-transparent transition-[box-shadow,border-color,background-color,transform] duration-200 ease-out",
           hovered &&
-            "border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]",
+            "border border-lime bg-lime/12 shadow-[0_8px_20px_rgba(0,0,0,0.38),0_0_24px_rgba(199,240,0,0.22)]",
           selected &&
             !hovered &&
-            "border-lime/80 bg-lime/10 shadow-[0_6px_16px_rgba(0,0,0,0.32),0_0_18px_rgba(199,240,0,0.16)]",
-          selected && hovered && "border-lime bg-lime/14",
-          "group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
+            "border border-lime/80 bg-lime/10 shadow-[0_6px_16px_rgba(0,0,0,0.32),0_0_18px_rgba(199,240,0,0.16)]",
+          selected && hovered && "border border-lime bg-lime/14",
+          "group-focus-visible/basket-hotspot:border group-focus-visible/basket-hotspot:border-lime group-focus-visible/basket-hotspot:bg-lime/10",
         )}
         style={{
           width: `${visualWidthPct}%`,
