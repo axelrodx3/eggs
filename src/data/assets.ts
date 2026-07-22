@@ -272,12 +272,13 @@ export const basketAssets: BasketAsset[] = [
   {
     id: "spacex",
     name: "SpaceX",
-    displayTicker: null,
-    providerSymbols: {},
-    assetType: "private",
+    displayTicker: "SPCX",
+    providerSymbols: { finnhub: "SPCX" },
+    assetType: "equity",
+    exchange: "NASDAQ",
     description:
-      "Private aerospace company developing launch vehicles, Starlink, and next-generation space systems. Included as a thematic representation, not a tradable public equity.",
-    sector: "Private Company",
+      "Aerospace company developing launch vehicles, Starlink, and next-generation space systems.",
+    sector: "Aerospace",
     officialUrl: "https://www.spacex.com",
     logoPath: "/assets/logos/spacex.svg",
     hotspot: {
@@ -290,7 +291,7 @@ export const basketAssets: BasketAsset[] = [
       rotation: 10,
       priority: 22,
     },
-    isPrivate: true,
+    isPrivate: false,
   },
 ];
 

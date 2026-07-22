@@ -46,7 +46,7 @@ Internal Next.js routes:
 | Tesla | TSLA | TSLA |
 | S&P 500 | SPX | ^GSPC |
 | Nasdaq-100 | NDX | ^NDX |
-| SpaceX | — | *(excluded — private company)* |
+| SpaceX | SPCX | SPCX |
 
 **Index note:** Finnhub’s free retail API may not return live index quotes for ^GSPC / ^NDX. If unavailable, the UI shows **“Unavailable”** — we do **not** substitute ETF proxies as index pricing.
 
@@ -66,7 +66,7 @@ In-memory server cache is per serverless instance on Vercel (not globally shared
 
 ## Rate limits
 
-Finnhub free tier: 60 API calls/minute. The service fetches one quote per public asset in parallel (~9 calls), cached for 90 seconds. HTTP **429** responses are not retried aggressively.
+Finnhub free tier: 60 API calls/minute. The service fetches one quote per public asset in parallel (~10 calls), cached for 90 seconds. HTTP **429** responses are not retried aggressively.
 
 ## Attribution
 

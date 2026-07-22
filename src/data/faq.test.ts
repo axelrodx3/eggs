@@ -4,7 +4,7 @@ import { TOKENOMICS } from "@/data/tokenomics";
 
 describe("faqItems", () => {
   it("includes the finalized FAQ set", () => {
-    expect(faqItems).toHaveLength(10);
+    expect(faqItems).toHaveLength(9);
     expect(faqItems.map((item) => item.question)).toEqual([
       "What is $EGGS?",
       "What is inside the basket?",
@@ -14,7 +14,6 @@ describe("faqItems", () => {
       "How do basket holder rewards work?",
       "What is the minimum balance for eligibility?",
       "Does holding $EGGS mean I own shares in the ten companies?",
-      "Is SpaceX publicly traded?",
       "Where can I buy $EGGS?",
     ]);
   });

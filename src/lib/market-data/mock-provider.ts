@@ -171,6 +171,23 @@ const MOCK_BASE: Record<
     isDelayed: false,
     delayMinutes: null,
   },
+  spacex: {
+    assetType: "equity",
+    currency: "USD",
+    exchange: "NASDAQ",
+    price: 160.95,
+    previousClose: 135.0,
+    open: 150.0,
+    high: 165.2,
+    low: 148.4,
+    volume: 412_000_000,
+    marketCap: 1.77e12,
+    change: 25.95,
+    changePercent: 19.22,
+    provider: "mock",
+    isDelayed: false,
+    delayMinutes: null,
+  },
 };
 
 function buildMockHistory(base: number, points = 30) {

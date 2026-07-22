@@ -19,13 +19,13 @@ export const faqItems: FaqItem[] = [
     id: "basket-contents",
     question: "What is inside the basket?",
     answer:
-      "The basket includes Apple, Alphabet, NVIDIA, Microsoft, Amazon, Meta, Tesla, the S&P 500, the Nasdaq-100, and SpaceX. Together they represent major technology leaders, broad market benchmarks, and a recognizable private company anchor.",
+      "The basket includes Apple, Alphabet, NVIDIA, Microsoft, Amazon, Meta, Tesla, the S&P 500, the Nasdaq-100, and SpaceX. Together they represent major technology leaders, broad market benchmarks, and a recognizable aerospace leader.",
   },
   {
     id: "why-ten",
     question: "Why were these ten assets selected?",
     answer:
-      "They represent major technology companies, broad market benchmarks, and a recognizable private company aligned with the project's One Basket. Every Giant. identity. The selection reflects widely known names that fit the basket narrative.",
+      "They represent major technology companies, broad market benchmarks, and a recognizable aerospace leader aligned with the project's One Basket. Every Giant. identity. The selection reflects widely known names that fit the basket narrative.",
   },
   {
     id: "flap-stocks-vault",
@@ -54,12 +54,6 @@ export const faqItems: FaqItem[] = [
     question: "Does holding $EGGS mean I own shares in the ten companies?",
     answer:
       "No. Holding $EGGS does not represent direct legal ownership of the displayed companies, indices, or underlying securities.",
-  },
-  {
-    id: "spacex-public",
-    question: "Is SpaceX publicly traded?",
-    answer:
-      "No. SpaceX is a private company and is included as part of the project's basket theme and Stocks Vault configuration or representation where supported. It does not have a publicly traded common stock ticker.",
   },
   {
     id: "where-buy",

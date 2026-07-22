@@ -151,17 +151,20 @@ describe("calculateChange", () => {
   });
 });
 
-describe("SpaceX exclusion", () => {
-  it("does not include SpaceX in public market assets", () => {
-    expect(publicMarketAssetIds).not.toContain("spacex");
-    expect(publicMarketAssetIds).toHaveLength(9);
+describe("SpaceX inclusion", () => {
+  it("includes SpaceX in public market assets", () => {
+    expect(publicMarketAssetIds).toContain("spacex");
+    expect(publicMarketAssetIds).toHaveLength(10);
   });
 });
 
 describe("symbol allowlisting", () => {
   it("rejects unsupported asset ids", () => {
-    expect(() => assertPublicAssetId("spacex")).toThrow();
     expect(() => assertPublicAssetId("fake")).toThrow();
+  });
+
+  it("allows SpaceX as a public market asset", () => {
+    expect(assertPublicAssetId("spacex").id).toBe("spacex");
   });
 });
 
@@ -238,7 +241,9 @@ describe("Robinhood stock URLs", () => {
     expect(getRobinhoodStockUrl(basketAssetById.ndx)).toBe(
       "https://robinhood.com/stocks/QQQ/",
     );
-    expect(getRobinhoodStockUrl(basketAssetById.spacex)).toBeNull();
+    expect(getRobinhoodStockUrl(basketAssetById.spacex)).toBe(
+      "https://robinhood.com/stocks/SPCX/",
+    );
   });
 });
 
