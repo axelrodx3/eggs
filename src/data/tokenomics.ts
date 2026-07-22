@@ -1,54 +1,38 @@
-export type TokenomicsCategory = {
-  id: string;
-  name: string;
-  percentage: number | null;
-  description: string;
-};
+export const TOKENOMICS = {
+  buyTaxPercent: 2,
+  sellTaxPercent: 3,
+  allocation: {
+    stocks: 100,
+    burn: 0,
+    dividendTracker: 0,
+    liquidity: 0,
+    unallocated: 0,
+  },
+  minimumEligibleBalance: 100_000,
+} as const;
 
-export type TokenomicsConfig = {
-  finalized: boolean;
-  categories: TokenomicsCategory[];
-};
+export type TaxAllocationKey = keyof typeof TOKENOMICS.allocation;
 
-/** Edit percentages here when distribution is finalized. */
-export const tokenomicsConfig: TokenomicsConfig = {
-  finalized: false,
-  categories: [
-    {
-      id: "liquidity",
-      name: "Liquidity",
-      percentage: null,
-      description: "Pool depth and trading availability at launch.",
-    },
-    {
-      id: "community",
-      name: "Community",
-      percentage: null,
-      description: "Community initiatives and ecosystem growth.",
-    },
-    {
-      id: "marketing",
-      name: "Marketing",
-      percentage: null,
-      description: "Brand awareness and launch campaigns.",
-    },
-    {
-      id: "treasury",
-      name: "Treasury",
-      percentage: null,
-      description: "Operational reserves and strategic initiatives.",
-    },
-    {
-      id: "team",
-      name: "Team",
-      percentage: null,
-      description: "Core contributors aligned with long-term delivery.",
-    },
-    {
-      id: "burn",
-      name: "Burn",
-      percentage: null,
-      description: "Supply reduction mechanisms when applicable.",
-    },
-  ],
-};
+export const TAX_ALLOCATION_ROWS: {
+  key: TaxAllocationKey;
+  label: string;
+}[] = [
+  { key: "stocks", label: "Stocks Vault" },
+  { key: "burn", label: "Burn" },
+  { key: "dividendTracker", label: "Dividend Tracker" },
+  { key: "liquidity", label: "Liquidity" },
+  { key: "unallocated", label: "Unallocated" },
+];
+
+export function formatEggsBalance(amount: number): string {
+  return new Intl.NumberFormat("en-US").format(amount);
+}
+
+export function allocationTotal(
+  allocation: typeof TOKENOMICS.allocation = TOKENOMICS.allocation,
+): number {
+  return Object.values(allocation).reduce<number>(
+    (sum, value) => sum + value,
+    0,
+  );
+}
