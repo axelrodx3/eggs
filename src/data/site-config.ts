@@ -4,8 +4,6 @@ export const siteConfig = {
   eyebrow: "THE MARKET. IN ONE BASKET.",
   headlineLine1: "One Basket.",
   headlineLine2: "Every Giant.",
-  heroCopy:
-    "$EGGS brings ten recognizable market giants into one unforgettable memecoin identity.",
   availability: "On Robinhood",
   robinhoodUrl: "https://robinhood.com",
   social: {
@@ -15,6 +13,9 @@ export const siteConfig = {
     /** Set when the official Dexscreener URL is available. */
     dexscreener: null as string | null,
   },
+  brandAssets: {
+    wordmark: "/assets/brand/eggs-wordmark.png",
+  },
   socialAssets: {
     dexscreener: "/assets/social/dexscreener.png",
     robinhood: "/assets/social/robinhood.svg",
@@ -23,7 +24,6 @@ export const siteConfig = {
   nav: [
     { id: "basket", label: "Basket" },
     { id: "market", label: "Market" },
-    { id: "how-to-buy", label: "How to Buy" },
     { id: "tokenomics", label: "Tokenomics" },
     { id: "faq", label: "FAQ" },
   ],

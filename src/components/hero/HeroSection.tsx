@@ -32,9 +32,6 @@ export function HeroSection() {
             {siteConfig.headlineLine1}
             <span className="block text-lime">{siteConfig.headlineLine2}</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-foreground/75">
-            {siteConfig.heroCopy}
-          </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href={siteConfig.robinhoodUrl}
@@ -57,9 +54,10 @@ export function HeroSection() {
             href={siteConfig.robinhoodUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-lime/90 transition hover:text-lime"
+            className="focus-ring mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-lime/90 transition hover:text-lime"
             aria-label={`${siteConfig.availability} on Robinhood`}
           >
+            <span>{siteConfig.availability}</span>
             <Image
               src={siteConfig.socialAssets.robinhood}
               alt=""
@@ -68,7 +66,6 @@ export function HeroSection() {
               className="h-5 w-5 shrink-0 object-contain"
               aria-hidden
             />
-            <span>{siteConfig.availability}</span>
           </a>
         </motion.div>
 

@@ -10,7 +10,6 @@ import { HeroSection } from "@/components/hero/HeroSection";
 import { BasketInspector } from "@/components/basket/BasketInspector";
 import { MarketTicker } from "@/components/market/MarketTicker";
 import { AssetGrid } from "@/components/assets/AssetGrid";
-import { HowToBuySection } from "@/components/how-to-buy/HowToBuySection";
 import { TokenomicsSection } from "@/components/tokenomics/TokenomicsSection";
 import { FaqSection } from "@/components/faq/FaqSection";
 import { SiteFooter } from "@/components/footer/SiteFooter";
@@ -81,7 +80,6 @@ function HomePageInner() {
           <BasketInspector />
           <MarketTicker />
           <AssetGrid />
-          <HowToBuySection />
           <TokenomicsSection />
           <FaqSection />
         </main>

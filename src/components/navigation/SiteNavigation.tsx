@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SocialLinks } from "@/components/navigation/SocialLinks";
@@ -80,11 +81,18 @@ export function SiteNavigation() {
       <div className="section-shell flex h-16 items-center justify-between gap-3">
         <button
           type="button"
-          className="focus-ring shrink-0 rounded-md text-lg font-semibold tracking-tight"
+          className="focus-ring shrink-0 rounded-md"
           onClick={() => scrollToSection("hero")}
           aria-label={`${siteConfig.name} home`}
         >
-          {siteConfig.name}
+          <Image
+            src={siteConfig.brandAssets.wordmark}
+            alt={siteConfig.name}
+            width={132}
+            height={40}
+            priority
+            className="h-8 w-auto max-w-[7.5rem] object-contain sm:h-9 sm:max-w-[8.5rem]"
+          />
         </button>
 
         <nav
