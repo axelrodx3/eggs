@@ -1,12 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { faqItems } from "@/data/faq";
 import { cn } from "@/lib/utils";
 
 export function FaqSection() {
+  const reducedMotion = useReducedMotion();
   const [openId, setOpenId] = useState<string | null>(faqItems[0]?.id ?? null);
 
   return (
@@ -18,6 +19,8 @@ export function FaqSection() {
           <div className="mt-8 space-y-2.5">
             {faqItems.map((item) => {
               const open = openId === item.id;
+              const panelId = `${item.id}-answer`;
+
               return (
                 <article
                   key={item.id}
@@ -26,14 +29,16 @@ export function FaqSection() {
                   <h3>
                     <button
                       type="button"
-                      className="focus-ring flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] font-medium sm:px-5"
+                      id={`${item.id}-trigger`}
+                      className="focus-ring flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] font-medium transition duration-200 ease-out hover:text-lime sm:px-5"
                       aria-expanded={open}
+                      aria-controls={panelId}
                       onClick={() => setOpenId(open ? null : item.id)}
                     >
                       {item.question}
                       <ChevronDown
                         className={cn(
-                          "h-5 w-5 shrink-0 transition",
+                          "h-5 w-5 shrink-0 transition duration-200 ease-out",
                           open && "rotate-180 text-lime",
                         )}
                       />
@@ -42,10 +47,17 @@ export function FaqSection() {
                   <AnimatePresence initial={false}>
                     {open ? (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={`${item.id}-trigger`}
+                        initial={reducedMotion ? false : { height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { duration: 0.22, ease: "easeOut" }
+                        }
                         className="overflow-hidden"
                       >
                         <p className="px-4 pb-4 text-sm leading-relaxed text-foreground/80 sm:px-5 sm:pb-5">

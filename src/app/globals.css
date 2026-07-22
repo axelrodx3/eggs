@@ -109,6 +109,10 @@ body {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-lime focus-visible:ring-offset-2 focus-visible:ring-offset-background;
 }
 
+.interactive-transition {
+  @apply transition duration-200 ease-out;
+}
+
 @keyframes ticker-scroll {
   from {
     transform: translateX(0);

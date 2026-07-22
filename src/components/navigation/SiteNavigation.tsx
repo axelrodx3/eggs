@@ -55,7 +55,7 @@ export function SiteNavigation() {
       key={id}
       type="button"
       className={cn(
-        "focus-ring rounded-md px-2 py-2 text-sm transition",
+        "focus-ring rounded-md px-2 py-2 text-sm transition duration-200 ease-out",
         activeSection === id
           ? "text-lime"
           : "text-foreground/75 hover:text-lime",
@@ -91,7 +91,7 @@ export function SiteNavigation() {
             width={132}
             height={40}
             priority
-            className="h-8 w-auto max-w-[7.5rem] object-contain sm:h-9 sm:max-w-[8.5rem]"
+            className="h-9 w-auto max-w-[8.5rem] object-contain sm:h-10 sm:max-w-[9.75rem]"
           />
         </button>
 
@@ -108,7 +108,7 @@ export function SiteNavigation() {
             href={siteConfig.robinhoodUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring ml-1 shrink-0 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-black transition hover:bg-lime-dim"
+            className="focus-ring ml-1 shrink-0 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-black transition duration-200 ease-out hover:bg-lime-dim"
           >
             Buy $EGGS
           </a>

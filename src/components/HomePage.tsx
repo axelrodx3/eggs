@@ -12,6 +12,7 @@ import { MarketTicker } from "@/components/market/MarketTicker";
 import { AssetGrid } from "@/components/assets/AssetGrid";
 import { TokenomicsSection } from "@/components/tokenomics/TokenomicsSection";
 import { FaqSection } from "@/components/faq/FaqSection";
+import { SectionReveal } from "@/components/layout/SectionReveal";
 import { SiteFooter } from "@/components/footer/SiteFooter";
 
 function resolveInitialAsset(search: string | null) {
@@ -77,11 +78,21 @@ function HomePageInner() {
         <SiteNavigation />
         <main>
           <HeroSection />
-          <BasketInspector />
-          <MarketTicker />
-          <AssetGrid />
-          <TokenomicsSection />
-          <FaqSection />
+          <SectionReveal>
+            <BasketInspector />
+          </SectionReveal>
+          <SectionReveal>
+            <MarketTicker />
+          </SectionReveal>
+          <SectionReveal>
+            <AssetGrid />
+          </SectionReveal>
+          <SectionReveal>
+            <TokenomicsSection />
+          </SectionReveal>
+          <SectionReveal>
+            <FaqSection />
+          </SectionReveal>
         </main>
         <SiteFooter />
       </MarketQuotesProvider>

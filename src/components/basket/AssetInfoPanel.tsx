@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import type { BasketAsset } from "@/data/assets";
 import { getRobinhoodStockUrl } from "@/data/assets";
@@ -42,6 +42,7 @@ export function AssetInfoPanel({
   onClose,
   mobile = false,
 }: AssetInfoPanelProps) {
+  const reducedMotion = useReducedMotion();
   const [range, setRange] = useState<ChartRange>("1M");
   const positive = (quote?.change ?? 0) >= 0;
   const typeLabel = asset.isPrivate
@@ -62,12 +63,12 @@ export function AssetInfoPanel({
       <motion.aside
         key={asset.id}
         id="asset-info-panel"
-        initial={{ opacity: 0, y: mobile ? 24 : 12 }}
+        initial={reducedMotion ? false : { opacity: 0, y: mobile ? 16 : 10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: mobile ? 24 : 12 }}
-        transition={{ duration: 0.25 }}
+        exit={reducedMotion ? undefined : { opacity: 0, y: mobile ? 16 : 10 }}
+        transition={{ duration: reducedMotion ? 0 : 0.22, ease: "easeOut" }}
         className={cn(
-          "glass-panel relative flex h-full flex-col p-5 sm:p-6",
+          "glass-panel relative flex h-full flex-col border-border/90 p-6 shadow-[0_12px_40px_rgba(0,0,0,0.28)] sm:p-6",
           mobile && "rounded-t-3xl border-b-0",
         )}
         aria-live="polite"
@@ -83,17 +84,17 @@ export function AssetInfoPanel({
           </button>
         ) : null}
 
-        <div className="mx-auto shrink-0">
+        <div className="mx-auto shrink-0 rounded-2xl border border-border/80 bg-black/20 p-2">
           <AssetLogo
             src={asset.logoPath}
             alt={asset.name}
             size={64}
             fallbackText={asset.displayTicker ?? "SPX"}
-            containerClassName="rounded-2xl"
+            containerClassName="rounded-xl"
           />
         </div>
 
-        <div className="mt-4 space-y-1 text-center lg:text-left">
+        <div className="mt-5 space-y-1 border-b border-border/70 pb-4 text-center lg:text-left">
           <p className="text-xs uppercase tracking-[0.18em] text-muted">
             {typeLabel}
           </p>
@@ -106,7 +107,7 @@ export function AssetInfoPanel({
         </div>
 
         {asset.isPrivate ? (
-          <div className="mt-5 space-y-4">
+          <div className="mt-5 space-y-5">
             <p className="text-sm leading-relaxed text-foreground/80">
               {asset.description}
             </p>
@@ -125,7 +126,7 @@ export function AssetInfoPanel({
             </a>
           </div>
         ) : (
-          <div className="mt-5 space-y-4">
+          <div className="mt-5 space-y-5">
             {isDevelopmentMock ? (
               <p className="inline-flex rounded-full border border-lime/30 bg-lime/10 px-3 py-1 text-xs font-medium text-lime">
                 Development mock data
@@ -199,7 +200,7 @@ export function AssetInfoPanel({
                       key={item}
                       type="button"
                       className={cn(
-                        "focus-ring rounded-full border px-3 py-1 text-xs transition",
+                        "focus-ring rounded-full border px-3 py-1 text-xs transition duration-200 ease-out",
                         range === item
                           ? "border-lime/50 bg-lime/10 text-lime"
                           : "border-border text-muted hover:border-lime/30",

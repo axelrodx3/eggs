@@ -1,68 +1,70 @@
+import { formatEggsBalance, TOKENOMICS } from "@/data/tokenomics";
+
 export type FaqItem = {
   id: string;
   question: string;
   answer: string;
 };
 
+const minimumBalance = formatEggsBalance(TOKENOMICS.minimumEligibleBalance);
+
 export const faqItems: FaqItem[] = [
   {
     id: "what-is-eggs",
     question: "What is $EGGS?",
     answer:
-      "$EGGS is a memecoin built around a single visual idea: ten recognizable market giants collected in one basket. The project focuses on brand, community, and a memorable market-themed identity.",
+      "$EGGS is a memecoin built around one basket containing ten recognizable companies and market benchmarks. The project combines a memorable market-themed identity with Flap's Stocks Vault infrastructure for basket based holder rewards.",
   },
   {
-    id: "basket-represent",
-    question: "What does the basket represent?",
+    id: "basket-contents",
+    question: "What is inside the basket?",
     answer:
-      "The basket is a creative representation of widely known companies and indexes. It communicates the project's theme and narrative. It is not a direct claim of proportional exposure to each asset.",
-  },
-  {
-    id: "ownership",
-    question: "Do $EGGS holders own the represented stocks?",
-    answer:
-      "The basket is a branding and product representation. Token ownership does not automatically provide legal ownership of the displayed securities unless explicitly documented through the final distribution mechanism.",
+      "The basket includes Apple, Alphabet, NVIDIA, Microsoft, Amazon, Meta, Tesla, the S&P 500, the Nasdaq-100, and SpaceX. Together they represent major technology leaders, broad market benchmarks, and a recognizable private company anchor.",
   },
   {
     id: "why-ten",
     question: "Why were these ten assets selected?",
     answer:
-      "The selection reflects recognizable names across technology, consumer, and broad market indexes, plus SpaceX as a private-company narrative anchor. Final selection criteria will be documented in official announcements.",
+      "They represent major technology companies, broad market benchmarks, and a recognizable private company aligned with the project's One Basket. Every Giant. identity. The selection reflects widely known names that fit the basket narrative.",
   },
   {
-    id: "where-buy",
-    question: "Where can I buy $EGGS?",
+    id: "flap-stocks-vault",
+    question: "What is the Flap Stocks Vault?",
     answer:
-      "$EGGS is intended to launch on Robinhood. Use the official listing page once published. Avoid unverified links or contract addresses shared outside official channels.",
+      "$EGGS uses Flap's existing Stocks Vault infrastructure. Collected protocol tax supports the project's ten asset basket through that vault. The project does not operate a separate custom $EGGS vault.",
   },
   {
-    id: "blockchain",
-    question: "What blockchain is $EGGS on?",
-    answer:
-      "Network details will be confirmed at launch. Check official announcements for the verified chain and contract address before interacting with any token.",
+    id: "tax-allocation",
+    question: "How are taxes allocated?",
+    answer: `Buy tax is ${TOKENOMICS.buyTaxPercent}% and sell tax is ${TOKENOMICS.sellTaxPercent}%. One hundred percent of collected buy and sell tax is allocated to the Stocks Vault. That does not mean one hundred percent of every token transaction is taxed.`,
   },
   {
-    id: "rwa",
-    question: "How will RWA distributions work?",
+    id: "basket-rewards",
+    question: "How do basket holder rewards work?",
     answer:
-      "Any real-world asset or distribution mechanism will be described in official documentation when finalized. Nothing on this site constitutes a promise of yield, dividends, or asset backing until formally published.",
+      "Basket based rewards are managed externally through Flap's Stocks Vault for qualifying holders. Nothing here guarantees payments, returns, payout timing, or direct stock ownership.",
   },
   {
-    id: "risks",
-    question: "What are the risks?",
-    answer:
-      "Memecoins are highly speculative. Prices can be volatile, liquidity may vary, and you could lose your entire investment. This site is informational, not financial advice. Do your own research.",
+    id: "minimum-eligibility",
+    question: "What is the minimum balance for eligibility?",
+    answer: `The configured minimum balance is ${minimumBalance} $EGGS. Wallets must meet that holder eligibility threshold to qualify for basket based rewards through the Stocks Vault.`,
   },
   {
-    id: "announcements",
-    question: "Where can I verify official announcements?",
+    id: "ownership",
+    question: "Does holding $EGGS mean I own shares in the ten companies?",
     answer:
-      "Follow only links published through verified official channels. Contract addresses, launch timing, and distribution details will be shared through those channels first.",
+      "No. Holding $EGGS does not represent direct legal ownership of the displayed companies, indices, or underlying securities.",
   },
   {
     id: "spacex-public",
     question: "Is SpaceX publicly traded?",
     answer:
-      "No. SpaceX is a private company and is included in the basket as a thematic representation only. It does not have public market pricing on this site.",
+      "No. SpaceX is a private company and is included as part of the project's basket theme and Stocks Vault configuration or representation where supported. It does not have a publicly traded common stock ticker.",
+  },
+  {
+    id: "where-buy",
+    question: "Where can I buy $EGGS?",
+    answer:
+      "$EGGS is on Robinhood. Use the official Robinhood listing when purchasing and avoid unverified links or contract addresses shared outside official channels.",
   },
 ];

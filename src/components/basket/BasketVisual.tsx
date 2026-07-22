@@ -31,6 +31,7 @@ export function BasketVisual({
   children,
 }: BasketVisualProps) {
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [motionActive, setMotionActive] = useState(true);
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
   const rotateX = useSpring(useTransform(pointerY, [-0.5, 0.5], [4, -4]), {
@@ -44,10 +45,19 @@ export function BasketVisual({
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
+    const syncMotion = () => {
+      setReducedMotion(media.matches);
+      setMotionActive(!media.matches && document.visibilityState === "visible");
+    };
+
+    syncMotion();
+    media.addEventListener("change", syncMotion);
+    document.addEventListener("visibilitychange", syncMotion);
+
+    return () => {
+      media.removeEventListener("change", syncMotion);
+      document.removeEventListener("visibilitychange", syncMotion);
+    };
   }, []);
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -62,9 +72,12 @@ export function BasketVisual({
     pointerY.set(0);
   };
 
+  const heroIdleMotion =
+    floating && variant === "hero" && motionActive && !reducedMotion;
+
   const sizeClass =
     variant === "hero"
-      ? "w-full max-w-[min(100%,42rem)] lg:max-w-[min(100%,48rem)]"
+      ? "w-full max-w-[min(100%,44.5rem)] lg:max-w-[min(100%,51.5rem)]"
       : "w-full max-w-none";
 
   return (
@@ -81,18 +94,23 @@ export function BasketVisual({
         )}
       />
       <motion.div
-        className={cn("relative mx-auto", sizeClass)}
+        className={cn("relative mx-auto will-change-transform", sizeClass)}
         style={
           tilt && !reducedMotion && !interactive
             ? { rotateX, rotateY, transformStyle: "preserve-3d" }
             : undefined
         }
         animate={
-          floating && !reducedMotion ? { y: [0, -8, 0] } : undefined
+          heroIdleMotion
+            ? {
+                y: [0, -5, 0],
+                rotateZ: [0, 0.7, 0, -0.7, 0],
+              }
+            : undefined
         }
         transition={
-          floating && !reducedMotion
-            ? { duration: 7, repeat: Infinity, ease: "easeInOut" }
+          heroIdleMotion
+            ? { duration: 9.5, repeat: Infinity, ease: "easeInOut" }
             : undefined
         }
       >
@@ -108,33 +126,30 @@ export function BasketVisual({
             priority={priority}
             sizes={
               variant === "hero"
-                ? "(max-width: 1024px) 100vw, 48rem"
+                ? "(max-width: 1024px) 100vw, 51.5rem"
                 : "(max-width: 1024px) 100vw, 42rem"
             }
             className="pointer-events-none relative z-0 h-full w-full select-none object-contain"
             draggable={false}
           />
           {children ? (
-            <div
-              className="absolute inset-0 z-20"
-              aria-hidden={false}
-            >
+            <div className="absolute inset-0 z-20" aria-hidden={false}>
               {children}
             </div>
           ) : null}
         </div>
-        {floating ? (
+        {floating && variant === "hero" ? (
           <motion.div
             aria-hidden
             className="pointer-events-none absolute bottom-[2%] left-1/2 z-0 h-6 w-[50%] -translate-x-1/2 rounded-[100%] bg-black/60 blur-2xl sm:h-8 sm:w-[55%]"
             animate={
-              !reducedMotion
-                ? { opacity: [0.3, 0.5, 0.3], scaleX: [0.94, 1.04, 0.94] }
+              heroIdleMotion
+                ? { opacity: [0.28, 0.42, 0.28], scaleX: [0.96, 1.03, 0.96] }
                 : undefined
             }
             transition={
-              !reducedMotion
-                ? { duration: 7, repeat: Infinity, ease: "easeInOut" }
+              heroIdleMotion
+                ? { duration: 9.5, repeat: Infinity, ease: "easeInOut" }
                 : undefined
             }
           />

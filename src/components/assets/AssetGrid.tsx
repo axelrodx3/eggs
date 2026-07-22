@@ -31,7 +31,7 @@ export function AssetCard({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.04, duration: 0.35 }}
       className={cn(
-        "focus-ring group relative flex min-h-[190px] flex-col items-center rounded-[1.75rem] border bg-surface-elevated px-4 py-5 text-center transition hover:-translate-y-0.5",
+        "focus-ring group relative flex min-h-[190px] flex-col items-center rounded-[1.75rem] border bg-surface-elevated px-4 py-5 text-center transition duration-200 ease-out hover:-translate-y-0.5",
         selected
           ? "border-lime lime-glow"
           : "border-border hover:border-lime/40",
